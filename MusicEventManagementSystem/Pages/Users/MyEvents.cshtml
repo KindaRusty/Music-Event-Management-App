@@ -1,0 +1,53 @@
+﻿@page
+@model MusicEventManagementSystem.Pages.User.MyEventsModel
+@{
+    ViewData["Title"] = "Sự kiện của tôi";
+}
+
+<h1>Sự kiện của tôi</h1>
+<p>Đây là tất cả các sự kiện bạn đã đăng ký.</p>
+<hr />
+
+@if (!Model.MyRegistrations.Any())
+{
+    <p>Bạn chưa đăng ký sự kiện nào. <a asp-page="/Index">Xem danh sách sự kiện</a>.</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var reg in Model.MyRegistrations)
+        {
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <strong>@reg.MusicEvent?.EventName</strong>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Ngày:</strong> @reg.MusicEvent?.EventDate.ToString("D")</p>
+                        <p><strong>Địa điểm:</strong> @reg.MusicEvent?.Location</p>
+                        <p>
+                            <strong>Đăng ký của bạn:</strong>
+                            <br />
+                            Loại vé: @reg.PricingTier?.TierName
+                            <br />
+                            Số lượng:
+                            @if (reg.PricingTier != null && reg.PricingTier.Price > 0)
+                            {
+                                @Math.Round(reg.TotalPrice / reg.PricingTier.Price)
+                            }
+                            else
+                            {
+                                @(reg.TotalPrice == 0 ? 1 : "N/A")
+                            }
+                            <br />
+                            Tổng cộng: @reg.TotalPrice.ToString("C")
+                            <br />
+                            Ngày đăng ký: @reg.RegistrationDate.ToString("g")
+                        </p>
+                        <a asp-page="/Events/Details" asp-route-id="@reg.EventID" class="btn btn-info">Xem lại chi tiết sự kiện</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

@@ -1,0 +1,107 @@
+﻿@page
+@model MusicEventManagementSystem.Pages.IndexModel
+@{
+    ViewData["Title"] = "Sự Kiện Âm Nhạc Sắp Diễn Ra";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+<div class="text-center">
+    <h1 class="display-4">Chào mừng đến với Hệ thống Quản lý Sự kiện</h1>
+    <p class="lead">Khám phá các sự kiện âm nhạc hot nhất đang chờ bạn!</p>
+</div>
+
+<hr class="my-4" />
+
+<div class="card card-body bg-light mb-4">
+    <form method="get" class="row g-3 align-items-end">
+        <div class="col-md-5">
+            <label asp-for="SearchTerm" class="form-label">Tìm kiếm sự kiện</label>
+            <input type="text" asp-for="SearchTerm" class="form-control" placeholder="Tên sự kiện, địa điểm..." />
+        </div>
+        <div class="col-md-5">
+            <label asp-for="GenreFilter" class="form-label">Thể loại</label>
+            <select asp-for="GenreFilter" class="form-select">
+                <option value="All">Tất cả thể loại</option>
+                @foreach (var genre in Model.Genres)
+                {
+                    <option value="@genre">@genre</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-success w-100">Lọc</button>
+        </div>
+    </form>
+</div>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="my-3">
+        <a asp-page-handler="Recommendations" class="btn btn-primary"><i class="bi bi-magic"></i> Tìm sự kiện cho tôi (AI)</a>
+    </div>
+}
+
+@if (Model.RecommendedEvents.Any())
+{
+    <hr />
+    <h3>Gợi ý dành cho bạn</h3>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var item in Model.RecommendedEvents)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm border-primary">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.EventName</h5>
+                        <p class="card-text">@item.Genre</p>
+                        <a asp-page="./Events/Details" asp-route-id="@item.EventID" class="btn btn-sm btn-info">Chi tiết</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <hr />
+}
+
+
+<div class="container mt-4">
+    <h2 class="mb-4">Sự Kiện Sắp Tới</h2>
+
+    @if (Model.UpcomingEvents.Any())
+    {
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            @foreach (var item in Model.UpcomingEvents)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <img src="@(item.ImageUrl ?? "/images/placeholder.jpg")" class="card-img-top" alt="Hình ảnh sự kiện" style="height: 200px; object-fit: cover;" />
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">@item.EventName</h5>
+                            <p class="card-text text-muted">
+                                <i class="bi bi-calendar-event"></i> @item.EventDate.ToString("dd/MM/yyyy HH:mm")
+                            </p>
+                            <p class="card-text text-muted">
+                                <i class="bi bi-geo-alt-fill"></i> @item.Location
+                            </p>
+                            <p class="card-text">@item.Description?.Substring(0, Math.Min(item.Description.Length, 100))... </p>
+                            <div class="mt-auto">
+                                <a asp-page="./Events/Details" asp-route-id="@item.EventID" class="btn btn-primary">Xem Chi Tiết</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p>Không tìm thấy sự kiện nào phù hợp.</p>
+    }
+</div>
+
+@if (User.Identity.IsAuthenticated)
+{
+}
+
+@section Scripts {
+}

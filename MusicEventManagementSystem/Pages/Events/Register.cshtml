@@ -1,0 +1,137 @@
+﻿@page "{id:int}"
+@model MusicEventManagementSystem.Pages.Events.RegisterModel
+@{
+    ViewData["Title"] = "Đăng ký sự kiện";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-dark text-white">
+                    <h2 class="mb-0">Đăng ký tham gia</h2>
+                    <h4 class="mb-0 text-muted">@Model.MusicEvent.EventName</h4>
+                </div>
+                
+                <form method="post">
+                    <input type="hidden" asp-for="Input.EventID" />
+
+                    <div class="card-body">
+                        
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <h5 class="mb-3">Bước 1: Chọn loại vé</h5>
+                        <div class="mb-3">
+                            @foreach (var tier in Model.MusicEvent.PricingTiers)
+                            {
+                                // Tính toán vé còn lại
+                                var remainingTickets = (tier.AvailableTickets.HasValue) 
+                                    ? (tier.AvailableTickets - tier.SoldTickets) 
+                                    : (int?)null;
+                                
+                                bool isSoldOut = remainingTickets.HasValue && remainingTickets.Value <= 0;
+                                
+                                <div class="form-check card p-3 mb-2 @(isSoldOut ? "bg-light" : "")">
+                                    @if (isSoldOut)
+                                    {
+                                        <input class="form-check-input" type="radio" 
+                                               asp-for="Input.SelectedPricingTierID" 
+                                               value="@tier.PricingTierID" 
+                                               id="tier-@tier.PricingTierID"
+                                               disabled />
+                                    }
+                                    else
+                                    {
+                                        <input class="form-check-input" type="radio" 
+                                               asp-for="Input.SelectedPricingTierID" 
+                                               value="@tier.PricingTierID" 
+                                               id="tier-@tier.PricingTierID" />
+                                    }
+                                           
+                                    <label class="form-check-label w-100" for="tier-@tier.PricingTierID">
+                                        <div class="d-flex justify-content-between">
+                                            <span class="fw-bold fs-5 @(isSoldOut ? "text-muted" : "")">
+                                                @tier.TierName
+                                                @if (isSoldOut) { <span class="badge bg-danger ms-2">Hết vé</span> }
+                                            </span>
+                                            <span class="fw-bold fs-5 text-primary">@tier.Price.ToString("N0") VNĐ</span>
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(tier.Description))
+                                        {
+                                            <div class="text-muted small">@tier.Description</div>
+                                        }
+                                        @if (remainingTickets.HasValue && !isSoldOut)
+                                        {
+                                            <div class="text-success small fw-bold">Chỉ còn @remainingTickets vé</div>
+                                        }
+                                    </label>
+                                </div>
+                            }
+                            <span asp-validation-for="Input.SelectedPricingTierID" class="text-danger"></span>
+                        </div>
+
+                        <hr class="my-4" />
+
+                        <h5 class="mb-3">Bước 2: Điền thông tin đăng ký</h5>
+                        
+                        @foreach (var field in Model.MusicEvent.RequiredFields.OrderBy(f => f.DisplayOrder))
+                        {
+                            var fieldName = $"Input.DynamicData[{field.FieldID}]";
+                            
+                            @switch (field.FieldType)
+                            {
+                                case "Checkbox":
+                                    <div class="form-check mb-3">
+                                        <input type="hidden" name="@fieldName" value="false" />
+                                        <input class="form-check-input" type="checkbox" 
+                                               id="field-@field.FieldID" 
+                                               name="@fieldName" 
+                                               value="true" 
+                                               checked="@(Model.Input.DynamicData[field.FieldID] == "true")" />
+                                        <label class="form-check-label" for="field-@field.FieldID">
+                                            @field.FieldName @(field.IsRequired ? "*" : "")
+                                        </label>
+                                        <span asp-validation-for="Input.DynamicData[field.FieldID]" class="text-danger small d-block"></span>
+                                    </div>
+                                    break;
+
+                                case "TextArea":
+                                    <div class="form-floating mb-3">
+                                        <textarea class="form-control" asp-for="Input.DynamicData[field.FieldID]" 
+                                                  id="field-@field.FieldID" 
+                                                  placeholder="@field.FieldName"></textarea>
+                                        <label for="field-@field.FieldID">@field.FieldName @(field.IsRequired ? "*" : "")</label>
+                                        <span asp-validation-for="Input.DynamicData[field.FieldID]" class="text-danger small"></span>
+                                    </div>
+                                    break;
+
+                                case "Email":
+                                case "Tel":
+                                default: // "Text"
+                                    <div class="form-floating mb-3">
+                                        <input type="@field.FieldType.ToLower()" 
+                                               class="form-control" 
+                                               asp-for="Input.DynamicData[field.FieldID]" 
+                                               id="field-@field.FieldID" 
+                                               placeholder="@field.FieldName" />
+                                        <label for="field-@field.FieldID">@field.FieldName @(field.IsRequired ? "*" : "")</label>
+                                        <span asp-validation-for="Input.DynamicData[field.FieldID]" class="text-danger small"></span>
+                                    </div>
+                                    break;
+                            }
+                        }
+
+                    </div>
+                    
+                    <div class="card-footer d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">Xác nhận Đăng ký</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

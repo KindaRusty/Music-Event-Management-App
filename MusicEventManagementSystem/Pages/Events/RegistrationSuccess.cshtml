@@ -1,0 +1,88 @@
+﻿@page "{id:int}"
+@model MusicEventManagementSystem.Pages.Events.RegistrationSuccessModel
+@{
+    ViewData["Title"] = "Đăng ký thành công";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-success">
+                <div class="card-header bg-success text-white text-center">
+                    <h2 class="mb-0">✅ Đăng ký Thành Công!</h2>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <p class="lead text-center">
+                        Cảm ơn bạn đã đăng ký tham gia sự kiện.
+                        Thông tin chi tiết đã được ghi nhận.
+                    </p>
+
+                    <hr class="my-4">
+
+                    <h4 class="mb-3">Chi tiết Đăng ký</h4>
+
+                    <ul class="list-group list-group-flush mb-4">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>Sự kiện:</strong>
+                            <span>@Model.Registration.MusicEvent.EventName</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>Email đăng ký:</strong>
+                            <span>@Model.Registration.ApplicationUser.Email</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>Mã đăng ký:</strong>
+                            <code>#@Model.Registration.RegistrationID</code>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>Loại vé:</strong>
+                            <span>@Model.Registration.PricingTier.TierName</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>Tổng chi phí:</strong>
+                            <span class="fw-bold text-danger">@Model.Registration.TotalPrice.ToString("N0") VNĐ</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>Trạng thái:</strong>
+                            <span class="badge bg-warning text-dark">@Model.Registration.Status</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>Thanh toán:</strong>
+                            <span class="badge bg-secondary">@Model.Registration.PaymentStatus</span>
+                        </li>
+
+                    </ul>
+
+                    @if (Model.DynamicData.Any())
+                    {
+                        <h5 class="mb-3">Thông tin bạn đã cung cấp</h5>
+                        <ul class="list-group list-group-flush">
+                            @foreach (var data in Model.DynamicData)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <strong>@data.RequiredField.FieldName:</strong>
+                                    @if (data.RequiredField.FieldType == "Checkbox")
+                                    {
+                                        <span>@(data.FieldValue == "true" ? "Đã đồng ý" : "Không")</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@data.FieldValue</span>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    }
+
+                    <hr class="my-4">
+
+                    <div class="text-center d-grid gap-2 d-md-block">
+                        <a asp-page="/Index" class="btn btn-primary btn-lg">Về trang chủ</a>
+                        <a asp-page="/Users/MyEvents" class="btn btn-outline-secondary btn-lg">Quản lý đăng ký</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

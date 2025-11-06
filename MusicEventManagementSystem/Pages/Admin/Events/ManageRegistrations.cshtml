@@ -1,0 +1,77 @@
+﻿@page "{id:int?}"
+@model MusicEventManagementSystem.Pages.Admin.Events.ManageRegistrationsModel
+@{
+    ViewData["Title"] = "Quản lý Đăng ký";
+}
+
+<h2>Quản lý Đăng ký cho: @Model.MusicEvent.EventName</h2>
+<hr />
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="card my-4">
+    <div class="card-header">Gửi Thông Báo Hàng Loạt</div>
+    <div class="card-body">
+        <form method="post" asp-page-handler="SendEmail" asp-route-id="@Model.MusicEvent.EventID">
+            <div class="form-group mb-2">
+                <label asp-for="EmailSubject">Chủ đề</label>
+                <input asp-for="EmailSubject" class="form-control" />
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="EmailMessage">Nội dung (hỗ trợ HTML)</label>
+                <textarea asp-for="EmailMessage" class="form-control" rows="5"></textarea>
+            </div>
+            <button type="submit" class="btn btn-warning mt-2">Gửi cho Tất cả Người tham dự</button>
+        </form>
+    </div>
+</div>
+
+<h3>Danh sách người tham dự (@Model.Registrations.Count)</h3>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Email Người dùng</th>
+            <th>Tên Loại Vé</th>
+            <th>Số lượng</th>
+            <th>Tổng cộng</th>
+            <th>Ngày Đăng ký</th>
+            <th>Trạng thái</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var reg in Model.Registrations)
+        {
+            <tr>
+                <td>@reg.ApplicationUser?.Email</td>
+
+                <td>@reg.PricingTier?.TierName</td>
+
+                <td>
+                    @if (reg.PricingTier != null && reg.PricingTier.Price > 0)
+                    {
+                        @Math.Round(reg.TotalPrice / reg.PricingTier.Price)
+                    }
+                    else
+                    {
+                        @(reg.TotalPrice == 0 ? 1 : "N/A")
+                    }
+                </td>
+
+                <td>@reg.TotalPrice.ToString("C")</td>
+                <td>@reg.RegistrationDate.ToString("g")</td>
+                <td>@reg.PaymentStatus</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a asp-page="./Index">Quay lại Danh sách Sự kiện</a>
+</div>

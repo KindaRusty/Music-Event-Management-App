@@ -1,0 +1,77 @@
+﻿@page "{id:int}"
+@model MusicEventManagementSystem.Pages.Events.DetailModel
+@{
+    ViewData["Title"] = Model.MusicEvent.EventName;
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6">
+            @if (!string.IsNullOrEmpty(Model.MusicEvent.ImageUrl))
+            {
+                <img src="@Model.MusicEvent.ImageUrl" class="img-fluid rounded shadow" alt="@Model.MusicEvent.EventName">
+            }
+            else
+            {
+                <img src="https://via.placeholder.com/600x400.png?text=Event+Image" class="img-fluid rounded shadow" alt="No Image Available">
+            }
+        </div>
+
+        <div class="col-md-6">
+            <h1 class="display-5">@Model.MusicEvent.EventName</h1>
+            <hr />
+
+            <div class="card bg-light mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Event Details</h5>
+                    <p class="card-text">
+                        <strong><i class="fas fa-calendar-alt"></i> Date:</strong>
+                        @Model.MusicEvent.EventDate.ToString("dddd, MMMM dd, yyyy")
+
+                        @* Sửa lỗi: Kiểm tra HasValue và dùng .Value *@
+                        @if (Model.MusicEvent.EndDate.HasValue && Model.MusicEvent.EndDate.Value.Date != Model.MusicEvent.EventDate.Date)
+                        {
+                            <span> - @Model.MusicEvent.EndDate.Value.ToString("dddd, MMMM dd, yyyy")</span>
+                        }
+                    </p>
+                    <p class="card-text">
+                        <strong><i class="fas fa-clock"></i> Time:</strong>
+                        @Model.MusicEvent.EventDate.ToString("h:mm tt")
+
+                        @* Sửa lỗi: Kiểm tra HasValue và dùng .Value *@
+                        @if (Model.MusicEvent.EndDate.HasValue)
+                        {
+                            <span> - @Model.MusicEvent.EndDate.Value.ToString("h:mm tt")</span>
+                        }
+                    </p>
+                    <p class="card-text">
+                        <strong><i class="fas fa-map-marker-alt"></i> Location:</strong>
+                        @Model.MusicEvent.Location
+                    </p>
+                    @if (!string.IsNullOrEmpty(Model.MusicEvent.Genre))
+                    {
+                        <p class="card-text">
+                            <strong><i class="fas fa-music"></i> Genre:</strong>
+                            @Model.MusicEvent.Genre
+                        </p>
+                    }
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 my-4">
+                <a asp-page="./Register" asp-route-id="@Model.MusicEvent.EventID" class="btn btn-primary btn-lg">Register Now</a>
+            </div>
+
+            <a asp-page="/Index" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to all events
+            </a>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12">
+            <h2>About This Event</h2>
+            <p style="white-space: pre-wrap; font-size: 1.1rem;">@Model.MusicEvent.Description</p>
+        </div>
+    </div>
+</div>
