@@ -8,7 +8,7 @@ namespace MusicEventManagementSystem.Models
         [Key]
         public int EventID { get; set; }
 
-        [Required(ErrorMessage = "Tên sự kiện là bắt buộc")]
+        [Required(ErrorMessage = "Event name is required!")]
         [StringLength(200, MinimumLength = 5)]
         public string EventName { get; set; } = string.Empty;
 

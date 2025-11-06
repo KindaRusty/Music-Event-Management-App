@@ -4,11 +4,11 @@ using Microsoft.Extensions.Configuration;
 using MusicEventManagementSystem.Services;
 using System;
 using System.Threading.Tasks;
-using MusicEventManagementSystem.Data; // THÊM
-using MusicEventManagementSystem.Models; // THÊM
-using System.Collections.Generic; // THÊM
-using Microsoft.EntityFrameworkCore; // THÊM
-using System.Linq; // THÊM
+using MusicEventManagementSystem.Data;
+using MusicEventManagementSystem.Models;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 
 namespace MusicEventManagementSystem.Services.Implementations
@@ -17,9 +17,7 @@ namespace MusicEventManagementSystem.Services.Implementations
     {
         private readonly OpenAIClient _client;
         private readonly string _model;
-        private readonly MusicDbContext _context; // THÊM
-
-        // SỬA CONSTRUCTOR: Thêm MusicDbContext
+        private readonly MusicDbContext _context;
         public AiApiService(IConfiguration configuration, MusicDbContext context)
         {
             var apiKey = configuration["OpenAISettings:ApiKey"];
@@ -30,15 +28,12 @@ namespace MusicEventManagementSystem.Services.Implementations
 
             _client = new OpenAIClient(apiKey);
             _model = configuration["OpenAISettings:Model"] ?? "gpt-3.5-turbo";
-            _context = context; // THÊM
+            _context = context;
         }
-
-        // SỬA LẠI: Đã xóa "DateTime eventDate"
         public async Task<string> GenerateEventDescriptionAsync(string eventTitle, string eventType)
         {
             var systemPrompt = "You are a helpful assistant that writes compelling event descriptions.";
 
-            // SỬA LẠI: Xóa tham chiếu đến eventDate
             var userPrompt = $"Generate an event description (about 100 words) for a {eventType} event titled '{eventTitle}'.";
 
             var chatCompletionsOptions = new ChatCompletionsOptions()
@@ -65,9 +60,6 @@ namespace MusicEventManagementSystem.Services.Implementations
             }
         }
 
-        // ĐÃ XÓA HÀM GetChatReplyAsync BỊ TRÙNG (hàm giả lập)
-
-        // Đây là hàm GetChatReplyAsync (thật)
         public async Task<string> GetChatReplyAsync(string userMessage)
         {
             var systemPrompt = "You are a helpful assistant for a music event website. " +
@@ -97,27 +89,25 @@ namespace MusicEventManagementSystem.Services.Implementations
                 return $"Sorry, AI service error: {ex.Message}";
             }
         }
-
-        // THÊM PHƯƠNG THỨC MỚI NÀY
         public async Task<List<MusicEvent>> GetEventRecommendationsAsync(string userId)
         {
-            // 1. Lấy sở thích (ví dụ, nếu bạn có model UserPreference)
-            // (Phần này là giả lập, bạn có thể thay bằng logic lấy sở thích thật)
-            var preferredGenre = "Pop"; 
+            // 1. Take user's preferred genre 
+            // Can be extended to fetch from user profile
+            var preferredGenre = "Pop";
 
-            // 2. Lấy sự kiện sắp diễn ra
+            // 2. Get upcoming published events
             var upcomingEvents = await _context.MusicEvents
                                                .Where(e => e.EventDate > DateTime.Now && e.IsPublished)
                                                .ToListAsync();
 
-            // 3. Logic AI (giả lập): Lọc theo thể loại
+            // 3. Logic AI (simple version): filter by preferred genre
             var recommendations = upcomingEvents
                 .Where(e => !string.IsNullOrEmpty(e.Genre) && e.Genre.Equals(preferredGenre, StringComparison.OrdinalIgnoreCase))
                 .OrderBy(e => e.EventDate)
                 .Take(3)
                 .ToList();
 
-            // Nếu không có, lấy 3 sự kiện bất kỳ
+            // If not enough recommendations, fill with other upcoming events
             if (!recommendations.Any())
             {
                 recommendations = upcomingEvents.OrderBy(e => e.EventDate).Take(3).ToList();

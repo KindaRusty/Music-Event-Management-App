@@ -3,9 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MusicEventManagementSystem.Models
 {
-    /// <summary>
-    /// Khớp với bảng EventRegistrations trong DB đã cài.txt
-    /// </summary>
     public class EventRegistration
     {
         [Key]
@@ -42,7 +39,6 @@ namespace MusicEventManagementSystem.Models
         [ForeignKey("PricingTierID")]
         public virtual PricingTier? PricingTier { get; set; }
 
-        // Navigation properties
         public virtual ICollection<RegistrationData> RegistrationData { get; set; } = new List<RegistrationData>();
     }
 }

@@ -2,9 +2,9 @@
 using MusicEventManagementSystem.Data;
 using MusicEventManagementSystem.Models;
 using MusicEventManagementSystem.Services.Interfaces;
-using System.Collections.Generic; // THÊM
-using System.Linq; // THÊM
-using System; // THÊM
+using System.Collections.Generic;
+using System.Linq;
+using System;
 
 namespace MusicEventManagementSystem.Services.Implementations
 {
@@ -16,10 +16,6 @@ namespace MusicEventManagementSystem.Services.Implementations
         {
             _context = context;
         }
-
-        // ... (Giữ nguyên các phương thức Create, Delete, Update, Get... của bạn) ...
-
-        // [CÁC PHƯƠORC CỦA BẠN ĐỂ THAM KHẢO]
         public async Task<int> CreateEventAsync(MusicEvent musicEvent)
         {
             _context.MusicEvents.Add(musicEvent);
@@ -72,8 +68,6 @@ namespace MusicEventManagementSystem.Services.Implementations
 
         public async Task UpdateEventAsync(MusicEvent musicEvent)
         {
-            // ... (Logic ReconcileCollection phức tạp của bạn ở đây) ...
-            // (Phần này được rút gọn dựa trên file của bạn)
             var dbEvent = await _context.MusicEvents
                .Include(e => e.PricingTiers)
                .Include(e => e.RequiredFields)
@@ -81,36 +75,27 @@ namespace MusicEventManagementSystem.Services.Implementations
 
             if (dbEvent == null) throw new KeyNotFoundException("Event not found");
 
-            // Cập nhật scalar properties
             _context.Entry(dbEvent).CurrentValues.SetValues(musicEvent);
-
-            // Logic Reconcile...
-            // ...
 
             await _context.SaveChangesAsync();
         }
-
-
-        // THÊM PHƯƠNG THỨC MỚI NÀY
         public async Task<IEnumerable<MusicEvent>> GetFilteredEventsAsync(string? searchTerm, string? genre)
         {
             var query = _context.MusicEvents
-                                .Where(e => e.IsPublished && e.EventDate > DateTime.Now) // SỬA: Dùng EventDate
+                                .Where(e => e.IsPublished && e.EventDate > DateTime.Now)
                                 .AsQueryable();
 
-            // Lọc theo từ khóa (Tên hoặc Địa điểm)
             if (!string.IsNullOrEmpty(searchTerm))
             {
-                query = query.Where(e => e.EventName.Contains(searchTerm) || e.Location.Contains(searchTerm)); // SỬA: Dùng EventName, Location
+                query = query.Where(e => e.EventName.Contains(searchTerm) || e.Location.Contains(searchTerm));
             }
 
-            // Lọc theo thể loại
             if (!string.IsNullOrEmpty(genre) && genre != "All")
             {
                 query = query.Where(e => e.Genre == genre);
             }
 
-            return await query.OrderBy(e => e.EventDate).ToListAsync(); // SỬA: Dùng EventDate
+            return await query.OrderBy(e => e.EventDate).ToListAsync();
         }
     }
 }

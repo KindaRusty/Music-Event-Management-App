@@ -3,9 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MusicEventManagementSystem.Models
 {
-    /// <summary>
-    /// Khớp với bảng UserPreferences trong DB đã cài.txt
-    /// </summary>
     public class UserPreference
     {
         [Key]

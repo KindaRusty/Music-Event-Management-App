@@ -10,7 +10,7 @@ namespace MusicEventManagementSystem.Data
         {
         }
 
-        // Thêm các DbSet cho TẤT CẢ các model của bạn
+        // Add DbSet properties for each entity
         public DbSet<MusicEvent> MusicEvents { get; set; }
         public DbSet<PricingTier> PricingTiers { get; set; }
         public DbSet<RequiredField> RequiredFields { get; set; }
@@ -22,67 +22,67 @@ namespace MusicEventManagementSystem.Data
         {
             base.OnModelCreating(builder);
 
-            // Cấu hình mối quan hệ 1-n: ApplicationUser -> MusicEvent
+            // 1-n relationship: ApplicationUser -> MusicEvent
             builder.Entity<ApplicationUser>()
                 .HasMany(u => u.CreatedEvents)
                 .WithOne(e => e.CreatedByUser)
                 .HasForeignKey(e => e.CreatedByUserID)
-                .OnDelete(DeleteBehavior.Restrict); // Ngăn xóa User nếu họ đã tạo Event
+                .OnDelete(DeleteBehavior.Restrict); 
 
-            // Cấu hình mối quan hệ 1-n: ApplicationUser -> EventRegistration
+            // Configure 1-to-many relationship: ApplicationUser -> EventRegistration
             builder.Entity<ApplicationUser>()
                 .HasMany(u => u.Registrations)
                 .WithOne(r => r.ApplicationUser)
                 .HasForeignKey(r => r.UserID)
-                .OnDelete(DeleteBehavior.Cascade); // Xóa đăng ký nếu User bị xóa
+                .OnDelete(DeleteBehavior.Cascade); // Delete registrations when the user is deleted
 
-            // Cấu hình mối quan hệ 1-1: ApplicationUser <-> UserPreference
+            // Configure 1-to-1 relationship: ApplicationUser <-> UserPreference
             builder.Entity<ApplicationUser>()
                 .HasOne(u => u.UserPreference)
                 .WithOne(p => p.ApplicationUser)
                 .HasForeignKey<UserPreference>(p => p.UserID);
 
-            // Cấu hình mối quan hệ 1-n: MusicEvent -> PricingTier
+            // Configure 1-to-many relationship: MusicEvent -> PricingTier
             builder.Entity<MusicEvent>()
                 .HasMany(e => e.PricingTiers)
                 .WithOne(p => p.MusicEvent)
                 .HasForeignKey(p => p.EventID)
-                .OnDelete(DeleteBehavior.Cascade); // Xóa các loại vé nếu Event bị xóa
+                .OnDelete(DeleteBehavior.Cascade); // Delete pricing tiers when the event is deleted
 
-            // Cấu hình mối quan hệ 1-n: MusicEvent -> RequiredField
+            // Configure 1-to-many relationship: MusicEvent -> RequiredField
             builder.Entity<MusicEvent>()
                 .HasMany(e => e.RequiredFields)
                 .WithOne(r => r.MusicEvent)
                 .HasForeignKey(r => r.EventID)
-                .OnDelete(DeleteBehavior.Cascade); // Xóa các trường bắt buộc nếu Event bị xóa
+                .OnDelete(DeleteBehavior.Cascade); // Delete required fields when the event is deleted
 
-            // Cấu hình mối quan hệ 1-n: MusicEvent -> EventRegistration
+            // Configure 1-to-many relationship: MusicEvent -> EventRegistration
             builder.Entity<MusicEvent>()
                 .HasMany(e => e.Registrations)
                 .WithOne(r => r.MusicEvent)
                 .HasForeignKey(r => r.EventID)
-                .OnDelete(DeleteBehavior.Restrict); // Ngăn xóa Event nếu đã có đăng ký
+                .OnDelete(DeleteBehavior.Restrict); // Prevent deleting an Event if registrations exist
 
-            // Cấu hình mối quan hệ 1-n: PricingTier -> EventRegistration
+            // Configure 1-to-many relationship: PricingTier -> EventRegistration
             builder.Entity<PricingTier>()
                 .HasMany(p => p.Registrations)
                 .WithOne(r => r.PricingTier)
                 .HasForeignKey(r => r.PricingTierID)
-                .OnDelete(DeleteBehavior.Restrict); // Ngăn xóa loại vé nếu đã có đăng ký
+                .OnDelete(DeleteBehavior.Restrict); // Prevent deleting a pricing tier if registrations exist
 
-            // Cấu hình mối quan hệ 1-n: EventRegistration -> RegistrationData
+            // Configure 1-to-many relationship: EventRegistration -> RegistrationData
             builder.Entity<EventRegistration>()
                 .HasMany(r => r.RegistrationData)
                 .WithOne(d => d.EventRegistration)
                 .HasForeignKey(d => d.RegistrationID)
-                .OnDelete(DeleteBehavior.Cascade); // Xóa data nếu đăng ký bị xóa
+                .OnDelete(DeleteBehavior.Cascade); // Delete registration data when the registration is deleted
 
-            // Cấu hình mối quan hệ 1-n: RequiredField -> RegistrationData
+            // Configure 1-to-many relationship: RequiredField -> RegistrationData
             builder.Entity<RequiredField>()
                 .HasMany(rf => rf.RegistrationData)
                 .WithOne(d => d.RequiredField)
                 .HasForeignKey(d => d.FieldID)
-                .OnDelete(DeleteBehavior.Restrict); // Ngăn xóa trường nếu đã có data
+                .OnDelete(DeleteBehavior.Restrict); // Prevent deleting a field if it has registration data
         }
     }
 }

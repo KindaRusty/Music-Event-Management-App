@@ -3,9 +3,8 @@ using MusicEventManagementSystem.Services;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging; // Thêm
-using System; // Thêm
-
+using Microsoft.Extensions.Logging;
+using System;
 namespace MusicEventManagementSystem.Services.Implementations
 {
     public class EmailService : IEmailService
@@ -21,7 +20,7 @@ namespace MusicEventManagementSystem.Services.Implementations
             _configuration = configuration;
             _logger = logger;
 
-            // Đọc cấu hình từ appsettings.json
+            // Read SendGrid settings from configuration
             _apiKey = _configuration["SendGridSettings:ApiKey"];
             _fromEmail = _configuration["SendGridSettings:FromEmail"];
             _fromName = _configuration["SendGridSettings:FromName"];
@@ -29,11 +28,11 @@ namespace MusicEventManagementSystem.Services.Implementations
 
         public async Task SendEmailAsync(string toEmail, string subject, string htmlMessage)
         {
-            // Kiểm tra xem API key đã được cấu hình chưa
+            // Check if SendGrid settings are configured
             if (string.IsNullOrEmpty(_apiKey) || string.IsNullOrEmpty(_fromEmail))
             {
                 _logger.LogError("SendGridSettings (ApiKey hoặc FromEmail) chưa được cấu hình trong appsettings.json.");
-                return; // Không gửi nếu thiếu cấu hình
+                return; // Nothing to do if not configured
             }
 
             try
@@ -47,12 +46,12 @@ namespace MusicEventManagementSystem.Services.Implementations
                 };
                 msg.AddTo(new EmailAddress(toEmail));
 
-                // Gửi email
+                // Send the email
                 var response = await client.SendEmailAsync(msg);
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    // Ghi log nếu SendGrid báo lỗi
+                    // Write detailed error log
                     _logger.LogError("Gửi email thất bại. Status code: {StatusCode}, Body: {Body}",
                         response.StatusCode,
                         await response.Body.ReadAsStringAsync());
