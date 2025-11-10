@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic; // THÊM
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using MusicEventManagementSystem.Models; // THÊM
+using MusicEventManagementSystem.Models;
 
 namespace MusicEventManagementSystem.Services
 {
