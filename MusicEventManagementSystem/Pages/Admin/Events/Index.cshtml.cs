@@ -17,8 +17,6 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
         {
             _repository = repository;
         }
-
-        // Initialize List to avoid null reference
         public IList<MusicEvent> MusicEvents { get; set; } = new List<MusicEvent>();
 
         public async Task OnGetAsync()

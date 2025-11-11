@@ -70,28 +70,28 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
         {
             if (string.IsNullOrEmpty(request.Prompt))
             {
-                return new JsonResult(new { success = false, error = "Prompt không được để trống." });
+                return new JsonResult(new { success = false, error = "Prompt cannot be empty." });
             }
 
             try
             {
-                // Dùng IAiService để tạo nội dung
-                // (Bạn có thể cần tạo một phương thức mới trong IAiService cho việc này, 
-                // hoặc tái sử dụng GenerateEventDescriptionAsync nếu nó phù hợp)
+                // Use IAiService to generate content
+                // (You might need to create a new method in IAiService for this,
+                // or reuse GenerateEventDescriptionAsync if it fits)
 
-                // Giả sử chúng ta dùng một phương thức mới (cần thêm vào IAiService)
+                // Assuming we use a new method (needs adding to IAiService)
                 // var generatedContent = await _aiService.GenerateEmailContentAsync(request.EventName, request.Prompt);
 
-                // Tạm thời, chúng ta tái sử dụng GetChatReplyAsync
-                string fullPrompt = $"Viết một email thông báo cho sự kiện '{request.EventName}' với nội dung: {request.Prompt}. Chỉ trả về nội dung email, không cần lời chào.";
+                // Temporarily, we reuse GetChatReplyAsync
+                string fullPrompt = $"Write an email notification for the event '{request.EventName}' with the content: {request.Prompt}. Only return the email content, without any greeting.";
                 var generatedContent = await _aiService.GetChatReplyAsync(fullPrompt);
 
                 return new JsonResult(new { success = true, content = generatedContent });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Lỗi khi gọi AI tạo nội dung.");
-                return new JsonResult(new { success = false, error = "Lỗi dịch vụ AI." });
+                _logger.LogError(ex, "Error calling AI to generate content.");
+                return new JsonResult(new { success = false, error = "AI service error." });
             }
         }
 
@@ -101,7 +101,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
 
             if (string.IsNullOrEmpty(EmailSubject) || string.IsNullOrEmpty(EmailMessage))
             {
-                TempData["Error"] = "Chủ đề và Nội dung email không được để trống.";
+                TempData["Error"] = "Subject and Email Message cannot be empty.";
                 return RedirectToPage(new { id = id });
             }
 
@@ -109,7 +109,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
 
             if (Registrations == null || !Registrations.Any())
             {
-                TempData["Error"] = "Không có ai đăng ký sự kiện này để gửi email.";
+                TempData["Error"] = "There are no attendees registered for this event to send an email to.";
                 return RedirectToPage(new { id = id });
             }
 
@@ -121,7 +121,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
 
             if (!recipients.Any())
             {
-                TempData["Error"] = "Không tìm thấy email hợp lệ nào của người tham dự.";
+                TempData["Error"] = "No valid attendee emails found.";
                 return RedirectToPage(new { id = id });
             }
 
@@ -134,7 +134,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
 
                     if (SelectedTemplate == "EventAnnouncement")
                     {
-                        // 1. Tạo dictionary placeholders
+                        // 1. Create placeholders dictionary
                         var placeholders = new Dictionary<string, string>
                         {
                             { "EventName", MusicEvent.EventName },
@@ -148,27 +148,26 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
                     }
                     else // (SelectedTemplate == "Custom")
                     {
-                        // 3. Gửi nội dung thô nếu chọn Tùy chỉnh
+                        // 3. Send raw content if Custom is selected
                         finalHtmlMessage = EmailMessage;
                     }
 
-                    // 4. Gửi mail
+                    // 4. Send mail
                     await _emailService.SendEmailAsync(email, EmailSubject, finalHtmlMessage);
                     successCount++;
                 }
 
-                TempData["Success"] = $"Đã gửi email thành công đến {successCount} người tham dự.";
+                TempData["Success"] = $"Successfully sent email to {successCount} attendees.";
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Lỗi khi gửi email hàng loạt cho EventID {EventId}", id);
-                TempData["Error"] = "Đã xảy ra lỗi khi gửi email hàng loạt.";
+                _logger.LogError(ex, "Error sending bulk email for EventID {EventId}", id);
+                TempData["Error"] = "An error occurred while sending the bulk email.";
             }
 
             return RedirectToPage(new { id = id });
         }
     }
-
     public class AiPromptRequest
     {
         public string Prompt { get; set; }

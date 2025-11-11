@@ -63,7 +63,14 @@ namespace MusicEventManagementSystem.Pages.Events
             {
                 return NotFound("Event not found.");
             }
-
+            if (MusicEvent.RequiredFields != null)
+            {
+                foreach (var field in MusicEvent.RequiredFields)
+                {
+                    var defaultValue = (field.FieldType == "Checkbox") ? "false" : string.Empty;
+                    Input.DynamicData.Add(field.FieldID, defaultValue);
+                }
+            }
             // Assign EventID to InputModel for posting
             Input.EventID = MusicEvent.EventID;
 

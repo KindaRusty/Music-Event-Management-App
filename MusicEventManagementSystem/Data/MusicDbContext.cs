@@ -9,8 +9,6 @@ namespace MusicEventManagementSystem.Data
         public MusicDbContext(DbContextOptions<MusicDbContext> options) : base(options)
         {
         }
-
-        // Add DbSet properties for each entity
         public DbSet<MusicEvent> MusicEvents { get; set; }
         public DbSet<PricingTier> PricingTiers { get; set; }
         public DbSet<RequiredField> RequiredFields { get; set; }

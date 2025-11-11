@@ -18,7 +18,7 @@
             <th>Start Date</th>
             <th>End Date</th>
             <th>Published</th>
-            <th>Actions</th> [cite: 209]
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -27,13 +27,13 @@
             <tr>
                 <td>@Html.DisplayFor(modelItem => item.EventName)</td>
                 <td>@Html.DisplayFor(modelItem => item.Location)</td>
-                <td>@Html.DisplayFor(modelItem => item.EventDate)</td> [cite: 210]
+                <td>@Html.DisplayFor(modelItem => item.EventDate)</td>
                 <td>@Html.DisplayFor(modelItem => item.EndDate)</td>
                 <td>@Html.DisplayFor(modelItem => item.IsPublished)</td>
                 <td>
                     <a asp-page="./Edit" asp-route-id="@item.EventID" class="btn btn-sm btn-outline-secondary">Edit</a>
-                    <a asp-page="./Delete" asp-route-id="@item.EventID" class="btn btn-sm btn-outline-danger">Delete</a> [cite: 211]
-                    <a asp-page="/Events/Detail" asp-route-id="@item.EventID" class="btn btn-sm btn-outline-info" target="_blank">View</a> [cite: 211]
+                    <a asp-page="./Delete" asp-route-id="@item.EventID" class="btn btn-sm btn-outline-danger">Delete</a>
+                    <a asp-page="/Events/Detail" asp-route-id="@item.EventID" class="btn btn-sm btn-outline-info" target="_blank">View</a>
                 </td>
             </tr>
         }

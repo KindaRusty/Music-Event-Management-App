@@ -1,7 +1,7 @@
 ﻿@page "{id:int}"
 @model MusicEventManagementSystem.Pages.Admin.Events.EditModel
 @{
-    ViewData["Title"] = "Chỉnh sửa sự kiện";
+    ViewData["Title"] = "Edit Event";
 }
 
 @Html.AntiForgeryToken()
@@ -12,149 +12,201 @@
             <form method="post">
                 <div class="card shadow-sm border-0 rounded-3">
                     <div class="card-header bg-primary text-white rounded-top-3">
-                        <h2 class="mb-0">@ViewData["Title"]: @Model.Input.EventName</h2>
+                        <h2 class="mb-0">
+                            @ViewData["Title"]:
+                            @Model.Input.EventName
+                        </h2>
                     </div>
 
                     <div class="card-body p-4 p-md-5">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
                         <input type="hidden" asp-for="Input.EventID" />
+
                         <input type="hidden" asp-for="Input.CreatedByUserID" />
                         <input type="hidden" asp-for="Input.CreatedDate" />
 
                         <div class="row g-4">
+
                             <div class="col-md-6">
-                                <h4 class="mb-3">Thông tin cơ bản</h4>
+                                <h4 class="mb-3">Basic Information</h4>
                                 <div class="form-floating mb-3">
-                                    <input asp-for="Input.EventName" class="form-control" id="eventName" placeholder="Tên sự kiện" />
-                                    <label asp-for="Input.EventName">Tên sự kiện</label>
+
+                                    <input asp-for="Input.EventName" class="form-control" id="eventName" placeholder="Event Name" />
+                                    <label asp-for="Input.EventName">Event Name</label>
                                     <span asp-validation-for="Input.EventName" class="text-danger small"></span>
+
                                 </div>
 
                                 <div class="form-floating mb-3">
-                                    <input asp-for="Input.Location" class="form-control" placeholder="Địa điểm" />
-                                    <label asp-for="Input.Location">Địa điểm</label>
+
+                                    <input asp-for="Input.Location" class="form-control" placeholder="Location" />
+                                    <label asp-for="Input.Location">Location</label>
                                     <span asp-validation-for="Input.Location" class="text-danger small"></span>
+
                                 </div>
 
                                 <div class="row g-2">
                                     <div class="col-sm-8">
+
                                         <div class="form-floating mb-3">
-                                            <input asp-for="Input.EventDate" class="form-control" type="datetime-local" placeholder="Ngày diễn ra" />
-                                            <label asp-for="Input.EventDate">Ngày diễn ra</label>
+                                            <input asp-for="Input.EventDate" class="form-control" type="datetime-local" placeholder="Event Date" />
+
+                                            <label asp-for="Input.EventDate">Event Date</label>
                                             <span asp-validation-for="Input.EventDate" class="text-danger small"></span>
+
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
+
                                         <div class="form-floating mb-3">
-                                            <input asp-for="Input.MaxAttendees" class="form-control" type="number" placeholder="Số lượng" />
-                                            <label asp-for="Input.MaxAttendees">Số lượng tối đa</label>
+                                            <input asp-for="Input.MaxAttendees" class="form-control" type="number" placeholder="Quantity" />
+
+                                            <label asp-for="Input.MaxAttendees">Max Attendees</label>
                                             <span asp-validation-for="Input.MaxAttendees" class="text-danger small"></span>
+
                                         </div>
                                     </div>
                                 </div>
 
+
                                 <div class="form-floating mb-3">
-                                    <input asp-for="Input.Genre" class="form-control" placeholder="Thể loại" />
-                                    <label asp-for="Input.Genre">Thể loại (ví dụ: EDM, Rock, Pop)</label>
+                                    <input asp-for="Input.Genre" class="form-control" placeholder="Genre" />
+                                    <label asp-for="Input.Genre">Genre (e.g., EDM, Rock, Pop)</label>
+
                                     <span asp-validation-for="Input.Genre" class="text-danger small"></span>
                                 </div>
                             </div>
 
+
                             <div class="col-md-6">
-                                <h4 class="mb-3">Mô tả</h4>
+                                <h4 class="mb-3">Description</h4>
                                 <div class="form-floating mb-3">
-                                    <textarea asp-for="Input.Description" class="form-control" placeholder="Mô tả sự kiện" id="eventDescription" style="height: 310px"></textarea>
-                                    <label asp-for="Input.Description">Mô tả sự kiện</label>
+
+                                    <textarea asp-for="Input.Description" class="form-control" placeholder="Event Description" id="eventDescription" style="height: 310px"></textarea>
+                                    <label asp-for="Input.Description">Event Description</label>
+
                                     <span asp-validation-for="Input.Description" class="text-danger small"></span>
                                 </div>
                             </div>
+
                         </div>
 
                         <hr class="my-4">
-                        <h4 class="mb-3">Quản lý Loại vé</h4>
+                        <h4 class="mb-3">Manage Ticket Types</h4>
                         <div id="pricingTiersContainer" class="mb-3">
-                            @for (int i = 0; i < Model.PricingTiers.Count; i++)
+
+                            @for (int i = 0; i < Model.PricingTiers.Count;
+                                                        i++)
                             {
                                 <div class="row g-3 align-items-center dynamic-row mb-3 p-3 border rounded">
+
                                     <input type="hidden" asp-for="PricingTiers[i].PricingTierID" />
 
                                     <div class="col-md-3">
-                                        <label class="form-label">Tên loại vé</label>
-                                        <input asp-for="PricingTiers[i].TierName" class="form-control" placeholder="Tên vé (VD: VIP)" />
+                                        <label class="form-label">Ticket Type Name</label>
+
+                                        <input asp-for="PricingTiers[i].TierName" class="form-control" placeholder="Ticket Name (e.g., VIP)" />
                                         <span asp-validation-for="PricingTiers[i].TierName" class="text-danger small"></span>
+
                                     </div>
                                     <div class="col-md-2">
-                                        <label class="form-label">Giá (VNĐ)</label>
+                                        <label class="form-label">Price (VND)</label>
+
                                         <input asp-for="PricingTiers[i].Price" class="form-control" type="number" step="1000" />
                                         <span asp-validation-for="PricingTiers[i].Price" class="text-danger small"></span>
+
                                     </div>
                                     <div class="col-md-2">
-                                        <label class="form-label">Số lượng</label>
+                                        <label class="form-label">Quantity</label>
+
                                         <input asp-for="PricingTiers[i].AvailableTickets" class="form-control" type="number" />
                                     </div>
+
                                     <div class="col-md-4">
-                                        <label class="form-label">Mô tả ngắn</label>
-                                        <input asp-for="PricingTiers[i].Description" class="form-control" placeholder="Mô tả (VD: Gần sân khấu)" />
+                                        <label class="form-label">Short Description</label>
+                                        <input asp-for="PricingTiers[i].Description" class="form-control" placeholder="Description
+    (e.g., Near stage)" />
                                     </div>
                                     <div class="col-md-1">
+
                                         <label class="form-label">&nbsp;</label>
-                                        <button type="button" class="btn btn-danger w-100 remove-row">Xóa</button>
+                                        <button type="button" class="btn btn-danger w-100 remove-row">Delete</button>
                                     </div>
+
                                 </div>
                             }
                         </div>
-                        <button id="addPricingTier" type="button" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> Thêm loại vé</button>
+
+                        <button id="addPricingTier" type="button" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> Add Ticket Type</button>
 
                         <hr class="my-4">
-                        <h4 class="mb-3">Quản lý Form Đăng ký</h4>
+                        <h4 class="mb-3">Manage Registration Form</h4>
                         <div id="requiredFieldsContainer" class="mb-3">
-                            @for (int i = 0; i < Model.RequiredFields.Count; i++)
+
+                            @for (int i = 0;
+                                                        i < Model.RequiredFields.Count; i++)
                             {
                                 <div class="row g-3 align-items-center dynamic-row mb-3 p-3 border rounded">
+
                                     <input type="hidden" asp-for="RequiredFields[i].FieldID" />
                                     <input asp-for="RequiredFields[i].DisplayOrder" type="hidden" class="display-order" />
                                     <div class="col-md-4">
-                                        <label class="form-label">Tên trường (Label)</label>
-                                        <input asp-for="RequiredFields[i].FieldName" class="form-control" placeholder="VD: Số điện thoại" />
+
+                                        <label class="form-label">Field Name (Label)</label>
+                                        <input asp-for="RequiredFields[i].FieldName" class="form-control" placeholder="e.g., Phone Number" />
+
                                         <span asp-validation-for="RequiredFields[i].FieldName" class="text-danger small"></span>
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label">Loại trường</label>
+
+                                        <label class="form-label">Field Type</label>
                                         <select asp-for="RequiredFields[i].FieldType" class="form-select">
+
                                             <option value="Text">Text</option>
                                             <option value="Email">Email</option>
+
                                             <option value="Tel">Phone Number</option>
                                             <option value="Checkbox">Checkbox</option>
+
                                             <option value="TextArea">Text Area</option>
                                         </select>
                                     </div>
+
                                     <div class="col-md-3 d-flex align-items-end">
                                         <div class="form-check form-switch ms-3">
+
                                             <input asp-for="RequiredFields[i].IsRequired" class="form-check-input" type="checkbox" role="switch" />
-                                            <label asp-for="RequiredFields[i].IsRequired" class="form-check-label">Bắt buộc?</label>
+                                            <label asp-for="RequiredFields[i].IsRequired" class="form-check-label">Required?</label>
                                         </div>
+
                                     </div>
                                     <div class="col-md-2">
+
                                         <label class="form-label">&nbsp;</label>
-                                        <button type="button" class="btn btn-danger w-100 remove-row">Xóa</button>
+                                        <button type="button" class="btn btn-danger w-100 remove-row">Delete</button>
                                     </div>
+
                                 </div>
                             }
                         </div>
-                        <button id="addRequiredField" type="button" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> Thêm trường</button>
+
+                        <button id="addRequiredField" type="button" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> Add Field</button>
 
 
                         <hr class="my-4">
                         <div class="form-check form-switch mb-3 fs-5">
                             <input class="form-check-input" type="checkbox" role="switch" asp-for="Input.IsPublished">
-                            <label class="form-check-label" asp-for="Input.IsPublished">Đăng tải công khai?</label>
+
+                            <label class="form-check-label" asp-for="Input.IsPublished">Publish Publicly?</label>
                         </div>
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="/Admin/Events/Index" class="btn btn-secondary btn-lg">Hủy</a>
-                            <button type="submit" class="btn btn-primary btn-lg">Lưu Thay Đổi</button>
+
+                            <a href="/Admin/Events/Index" class="btn btn-secondary btn-lg">Cancel</a>
+                            <button type="submit" class="btn btn-primary btn-lg">Save Changes</button>
                         </div>
                     </div>
+
                 </div>
             </form>
         </div>
@@ -165,109 +217,123 @@
     <partial name="_ValidationScriptsPartial" />
 
     <script>
-        $(document).ready(function () {
+                $(document).ready(function () {
 
-            // Cập nhật lại tên và ID của các hàng động
-            function reindexDynamicRows(containerSelector) {
-                $(containerSelector).children('.dynamic-row').each(function (index) {
-                    // Cập nhật thuộc tính 'name' của tất cả input, select
-                    $(this).find('input, select').each(function () {
-                        var newName = $(this).attr('name').replace(/\[\d+\]/, '[' + index + ']');
-                        $(this).attr('name', newName);
+                    // Re-index names and IDs of dynamic rows
+                    function reindexDynamicRows(containerSelector) {
 
-                        var newId = $(this).attr('id').replace(/_\d+__/, '_' + index + '__');
-                        $(this).attr('id', newId);
+            $(containerSelector).children('.dynamic-row').each(function (index) {
+                            // Update the 'name' attribute of all inputs, selects
+                            $(this).find('input, select').each(function () {
+                                var newName = $(this).attr('name').replace(/\[\d+\]/, '[' + index + ']');
+        $(this).attr('name', newName);
 
-                        $(this).siblings('span.text-danger').attr('data-valmsg-for', newName);
-                        $(this).siblings('label').attr('for', newId);
+                                var newId = $(this).attr('id').replace(/_\d+__/, '_' + index + '__');
+                                $(this).attr('id', newId);
+
+                                $(this).siblings('span.text-danger').attr('data-valmsg-for', newName);
+                                $(this).siblings('label').attr('for', newId);
+                            });
+
+                            $(this).find('.display-order').val(index);
+                        });
+        }
+
+                    // Remove a row
+                    $('body').on('click', '.remove-row', function () {
+                        var container = $(this).closest('.dynamic-row').parent();
+                        $(this).closest('.dynamic-row').remove();
+
+                        if (container.attr('id') === 'pricingTiersContainer') {
+
+              reindexDynamicRows('#pricingTiersContainer');
+                        } else {
+                            reindexDynamicRows('#requiredFieldsContainer');
+                        }
+                    });
+        // Add ticket type
+                    $("#addPricingTier").on("click", function () {
+                        var container = $("#pricingTiersContainer");
+                        var index = container.children('.dynamic-row').length;
+
+                        var html = `
+                        <div class="row g-3 align-items-center dynamic-row mb-3 p-3 border rounded">
+
+                           <input type="hidden" name="PricingTiers[${index}].PricingTierID" value="0" />
+                            <div class="col-md-3">
+                                <label class="form-label">Ticket Type Name</label>
+                                <input name="PricingTiers[${index}].TierName" class="form-control" placeholder="Ticket Name
+        (e.g., VIP)" />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Price (VND)</label>
+                                <input name="PricingTiers[${index}].Price" class="form-control" type="number" step="1000" value="0" />
+
+                           </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Quantity</label>
+                                <input name="PricingTiers[${index}].AvailableTickets" class="form-control" type="number" />
+
+                      </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Short Description</label>
+                                <input name="PricingTiers[${index}].Description" class="form-control" placeholder="Description" />
+
+                   </div>
+                            <div class="col-md-1">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="button" class="btn btn-danger w-100 remove-row">Delete</button>
+
+              </div>
+                        </div>`;
+        container.append(html);
+                        reindexDynamicRows('#pricingTiersContainer');
                     });
 
-                    $(this).find('.display-order').val(index);
+                    // Add required field
+                    $("#addRequiredField").on("click", function () {
+                        var container = $("#requiredFieldsContainer");
+                        var index = container.children('.dynamic-row').length;
+
+                        var html = `
+                        <div class="row g-3 align-items-center dynamic-row
+        mb-3 p-3 border rounded">
+                            <input type="hidden" name="RequiredFields[${index}].FieldID" value="0" />
+                            <input name="RequiredFields[${index}].DisplayOrder" type="hidden" class="display-order" value="${index}" />
+                            <div class="col-md-4">
+                                <label class="form-label">Field Name
+        (Label)</label>
+                                <input name="RequiredFields[${index}].FieldName" class="form-control" placeholder="e.g., T-Shirt (size S, M, L)" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Field
+        Type</label>
+                                <select name="RequiredFields[${index}].FieldType" class="form-select">
+                                    <option value="Text">Text</option>
+                                    <option value="Email">Email</option>
+
+                    <option value="Tel">Phone Number</option>
+                                    <option value="Checkbox">Checkbox</option>
+                                    <option value="TextArea">Text Area</option>
+                                </select>
+
+                         </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <div class="form-check form-switch ms-3">
+                                    <input name="RequiredFields[${index}].IsRequired" class="form-check-input" type="checkbox" role="switch"
+        value="true" checked />
+                                    <label class="form-check-label">Required?</label>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+
+                             <label class="form-label">&nbsp;</label>
+                                <button type="button" class="btn btn-danger w-100 remove-row">Delete</button>
+                            </div>
+                        </div>`;
+        container.append(html);
+                        reindexDynamicRows('#requiredFieldsContainer');
+                    });
                 });
-            }
-
-            // Xóa một hàng
-            $('body').on('click', '.remove-row', function () {
-                var container = $(this).closest('.dynamic-row').parent();
-                $(this).closest('.dynamic-row').remove();
-
-                if (container.attr('id') === 'pricingTiersContainer') {
-                    reindexDynamicRows('#pricingTiersContainer');
-                } else {
-                    reindexDynamicRows('#requiredFieldsContainer');
-                }
-            });
-
-            // Thêm loại vé
-            $("#addPricingTier").on("click", function () {
-                var container = $("#pricingTiersContainer");
-                var index = container.children('.dynamic-row').length;
-
-                var html = `
-                <div class="row g-3 align-items-center dynamic-row mb-3 p-3 border rounded">
-                    <input type="hidden" name="PricingTiers[${index}].PricingTierID" value="0" />
-                    <div class="col-md-3">
-                        <label class="form-label">Tên loại vé</label>
-                        <input name="PricingTiers[${index}].TierName" class="form-control" placeholder="Tên vé (VD: VIP)" />
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">Giá (VNĐ)</label>
-                        <input name="PricingTiers[${index}].Price" class="form-control" type="number" step="1000" value="0" />
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">Số lượng</label>
-                        <input name="PricingTiers[${index}].AvailableTickets" class="form-control" type="number" />
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Mô tả ngắn</label>
-                        <input name="PricingTiers[${index}].Description" class="form-control" placeholder="Mô tả" />
-                    </div>
-                    <div class="col-md-1">
-                        <label class="form-label">&nbsp;</label>
-                        <button type="button" class="btn btn-danger w-100 remove-row">Xóa</button>
-                    </div>
-                </div>`;
-                container.append(html);
-                reindexDynamicRows('#pricingTiersContainer');
-            });
-
-            // Thêm trường bắt buộc
-            $("#addRequiredField").on("click", function () {
-                var container = $("#requiredFieldsContainer");
-                var index = container.children('.dynamic-row').length;
-
-                var html = `
-                <div class="row g-3 align-items-center dynamic-row mb-3 p-3 border rounded">
-                    <input type="hidden" name="RequiredFields[${index}].FieldID" value="0" />
-                    <input name="RequiredFields[${index}].DisplayOrder" type="hidden" class="display-order" value="${index}" />
-                    <div class="col-md-4">
-                        <label class="form-label">Tên trường (Label)</label>
-                        <input name="RequiredFields[${index}].FieldName" class="form-control" placeholder="VD: Áo (size S, M, L)" />
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">Loại trường</label>
-                        <select name="RequiredFields[${index}].FieldType" class="form-select">
-                            <option value="Text">Text</option>
-                            <option value="Email">Email</option>
-                            <option value="Tel">Phone Number</option>
-                            <option value="Checkbox">Checkbox</option>
-                            <option value="TextArea">Text Area</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 d-flex align-items-end">
-                        <div class="form-check form-switch ms-3">
-                            <input name="RequiredFields[${index}].IsRequired" class="form-check-input" type="checkbox" role="switch" value="true" checked />
-                            <label class="form-check-label">Bắt buộc?</label>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">&nbsp;</label>
-                        <button type="button" class="btn btn-danger w-100 remove-row">Xóa</button>
-                    </div>
-                </div>`;
-                container.append(html);
-                reindexDynamicRows('#requiredFieldsContainer');
-            });
-        });
     </script>
 }
