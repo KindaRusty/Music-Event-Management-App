@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore; // [QUAN TRỌNG] Cần cho CreateExecutionStrategy
+using Microsoft.EntityFrameworkCore;
 using MusicEventManagementSystem.Data;
 using MusicEventManagementSystem.Models;
 using MusicEventManagementSystem.Services.Interfaces;
@@ -40,127 +40,130 @@ namespace MusicEventManagementSystem.Pages.Events
             [Required]
             public int EventID { get; set; }
 
-            [Required(ErrorMessage = "Vui lòng chọn một loại vé")]
-            public int SelectedPricingTierID { get; set; }
+            [Required(ErrorMessage = "Please select a ticket type.")]
+            public int? PricingTierID { get; set; }
 
+            [Required]
+            [Range(1, 10, ErrorMessage = "Ticket quantity must be between 1 and 10.")]
+            public int Quantity { get; set; } = 1;
+
+            // Used to receive dynamic fields
             public Dictionary<int, string> DynamicData { get; set; } = new Dictionary<int, string>();
         }
 
-        public async Task<IActionResult> OnGetAsync(int id)
+        public async Task<IActionResult> OnGetAsync(int? id)
         {
-            var musicEvent = await _eventRepository.GetEventWithDetailsAsync(id);
-
-            if (musicEvent == null || !musicEvent.IsPublished)
+            if (id == null)
             {
-                return NotFound("Không tìm thấy sự kiện hoặc sự kiện chưa được công bố.");
+                return NotFound();
+            }
+            MusicEvent = await _eventRepository.GetEventWithDetailsAsync(id.Value);
+
+            if (MusicEvent == null)
+            {
+                return NotFound("Event not found.");
             }
 
-            MusicEvent = musicEvent;
-            Input.EventID = musicEvent.EventID;
-
-            foreach (var field in MusicEvent.RequiredFields)
-            {
-                Input.DynamicData[field.FieldID] = string.Empty;
-            }
+            // Assign EventID to InputModel for posting
+            Input.EventID = MusicEvent.EventID;
 
             return Page();
         }
 
-        // [VIẾT LẠI HOÀN TOÀN ĐỂ FIX LỖI EXECUTION STRATEGY]
         public async Task<IActionResult> OnPostAsync()
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return Challenge();
-            }
-
-            // Tải lại thông tin sự kiện đầy đủ để xác thực
             var musicEvent = await _eventRepository.GetEventWithDetailsAsync(Input.EventID);
             if (musicEvent == null)
             {
-                return NotFound("Sự kiện không tồn tại.");
-            }
-            MusicEvent = musicEvent; // Gán lại để render nếu có lỗi
-
-            // Xác thực loại vé
-            var selectedTier = musicEvent.PricingTiers
-                .FirstOrDefault(p => p.PricingTierID == Input.SelectedPricingTierID);
-
-            if (selectedTier == null)
-            {
-                ModelState.AddModelError(string.Empty, "Loại vé bạn chọn không hợp lệ.");
+                return NotFound("Event no longer exists.");
             }
 
-            // Xác thực các trường động (Dynamic Fields)
-            foreach (var requiredField in musicEvent.RequiredFields)
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
             {
-                if (requiredField.IsRequired)
+                return Challenge(); // Requires login
+            }
+
+            // Check dynamic fields
+            foreach (var field in musicEvent.RequiredFields.Where(f => f.IsRequired))
+            {
+                if (!Input.DynamicData.ContainsKey(field.FieldID) || string.IsNullOrWhiteSpace(Input.DynamicData[field.FieldID]))
                 {
-                    Input.DynamicData.TryGetValue(requiredField.FieldID, out var fieldValue);
-                    if (requiredField.FieldType == "Checkbox" && fieldValue != "true")
+                    if (field.FieldType == "Checkbox")
                     {
-                        ModelState.AddModelError($"Input.DynamicData[{requiredField.FieldID}]", $"Bạn phải đồng ý với '{requiredField.FieldName}'.");
+                        ModelState.AddModelError($"Input.DynamicData[{field.FieldID}]", $"You must agree to '{field.FieldName}'.");
                     }
-                    else if (requiredField.FieldType != "Checkbox" && string.IsNullOrWhiteSpace(fieldValue))
+                    else
                     {
-                        ModelState.AddModelError($"Input.DynamicData[{requiredField.FieldID}]", $"{requiredField.FieldName} là bắt buộc.");
+                        ModelState.AddModelError($"Input.DynamicData[{field.FieldID}]", $"Please enter information for '{field.FieldName}'.");
                     }
+                }
+                else if (field.FieldType == "Checkbox" && Input.DynamicData[field.FieldID] != "true")
+                {
+                    ModelState.AddModelError($"Input.DynamicData[{field.FieldID}]", $"You must agree to '{field.FieldName}'.");
                 }
             }
 
+
             if (!ModelState.IsValid)
             {
-                return Page(); // Render lại trang với các lỗi
+                // If there are errors, reload the page with event info
+                MusicEvent = musicEvent;
+                return Page();
             }
 
-            // [SỬA LỖI] Lấy chiến lược (strategy) từ DbContext
             var strategy = _context.Database.CreateExecutionStrategy();
 
-            // Thực thi toàn bộ logic trong một khối "ExecuteAsync"
-            // Strategy này sẽ tự động quản lý transaction và retry
             var result = await strategy.ExecuteAsync(async () =>
             {
-                // Bắt đầu transaction BÊN TRONG strategy
+                // Begin Transaction
                 await using var transaction = await _context.Database.BeginTransactionAsync();
+
                 try
                 {
-                    // Tải lại loại vé BÊN TRONG transaction để khóa dòng (lock)
-                    var tierToUpdate = await _context.PricingTiers
-                        .FirstOrDefaultAsync(p => p.PricingTierID == Input.SelectedPricingTierID);
+                    var selectedTier = await _context.PricingTiers
+                        .FromSql($"SELECT * FROM PricingTiers WHERE PricingTierID = {Input.PricingTierID} FOR UPDATE")
+                        .FirstOrDefaultAsync();
 
-                    if (tierToUpdate == null)
+                    if (selectedTier == null)
                     {
-                        ModelState.AddModelError(string.Empty, "Loại vé không còn hợp lệ.");
-                        await transaction.RollbackAsync();
+                        ModelState.AddModelError(string.Empty, "Invalid ticket type.");
                         return (IActionResult)Page();
                     }
 
-                    // Kiểm tra vé
-                    tierToUpdate.SoldTickets++;
-                    if (tierToUpdate.AvailableTickets.HasValue && tierToUpdate.SoldTickets > tierToUpdate.AvailableTickets)
+                    // Check remaining ticket quantity (Concurrency Check)
+                    if (selectedTier.AvailableTickets.HasValue)
                     {
-                        ModelState.AddModelError(string.Empty, "Rất tiếc, loại vé này đã hết trong lúc bạn đăng ký.");
-                        await transaction.RollbackAsync();
-                        return (IActionResult)Page();
+                        int remaining = selectedTier.AvailableTickets.Value - selectedTier.SoldTickets;
+                        if (remaining < Input.Quantity)
+                        {
+                            ModelState.AddModelError("Input.Quantity", $"Sorry, only {remaining} tickets are left for this tier.");
+                            return (IActionResult)Page();
+                        }
                     }
 
-                    // Tạo đối tượng EventRegistration
+                    // Update sold tickets count
+                    selectedTier.SoldTickets += Input.Quantity;
+
+                    // Calculate total price
+                    decimal totalPrice = selectedTier.Price * Input.Quantity;
+
+                    // Create EventRegistration object
                     var registration = new EventRegistration
                     {
-                        EventID = musicEvent.EventID,
+                        EventID = Input.EventID,
                         UserID = user.Id,
-                        PricingTierID = tierToUpdate.PricingTierID,
+                        PricingTierID = selectedTier.PricingTierID,
+                        TotalPrice = totalPrice,
                         RegistrationDate = DateTime.UtcNow,
-                        TotalPrice = tierToUpdate.Price,
-                        Status = "Pending",
+                        Status = "Confirmed",
                         PaymentStatus = "Unpaid"
                     };
 
-                    // Tạo danh sách RegistrationData
-                    foreach (var data in Input.DynamicData)
+                    // Add dynamic data
+                    if (Input.DynamicData != null)
                     {
-                        if (!string.IsNullOrWhiteSpace(data.Value))
+                        foreach (var data in Input.DynamicData.Where(d => !string.IsNullOrWhiteSpace(d.Value)))
                         {
                             registration.RegistrationData.Add(new RegistrationData
                             {
@@ -170,30 +173,30 @@ namespace MusicEventManagementSystem.Pages.Events
                         }
                     }
 
-                    // Lưu Registration (và RegistrationData, và cập nhật PricingTier)
+                    // Save Registration (and RegistrationData, and update PricingTier)
                     _context.EventRegistrations.Add(registration);
 
-                    // Lưu tất cả thay đổi vào DB
+                    // Save all changes to DB
                     await _context.SaveChangesAsync();
 
-                    // Hoàn tất Transaction
+                    // Commit Transaction
                     await transaction.CommitAsync();
 
-                    _logger.LogInformation("User {UserId} đã đăng ký thành công sự kiện {EventId}", user.Id, musicEvent.EventID);
+                    _logger.LogInformation("User {UserId} successfully registered for event {EventId}", user.Id, musicEvent.EventID);
 
-                    // Chuyển hướng đến trang thành công
+                    // Redirect to success page
                     return (IActionResult)RedirectToPage("/Events/RegistrationSuccess", new { id = registration.RegistrationID });
                 }
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    _logger.LogError(ex, "Lỗi nghiêm trọng khi user {UserId} đăng ký sự kiện {EventId}", user.Id, Input.EventID);
-                    ModelState.AddModelError(string.Empty, "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.");
+                    _logger.LogError(ex, "Critical error when user {UserId} registered for event {EventId}", user.Id, Input.EventID);
+                    ModelState.AddModelError(string.Empty, "A system error occurred. Please try again later.");
                     return (IActionResult)Page();
                 }
             });
 
-            // Trả về kết quả từ bên trong strategy
+            // Return the result from within the strategy
             return result!;
         }
     }

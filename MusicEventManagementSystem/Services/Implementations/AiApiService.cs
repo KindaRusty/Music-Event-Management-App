@@ -25,7 +25,6 @@ namespace MusicEventManagementSystem.Services.Implementations
             {
                 throw new InvalidOperationException("OpenAI API key (OpenAISettings:ApiKey) không được cấu hình trong appsettings.json");
             }
-
             _client = new OpenAIClient(apiKey);
             _model = configuration["OpenAISettings:Model"] ?? "gpt-3.5-turbo";
             _context = context;
@@ -94,7 +93,6 @@ namespace MusicEventManagementSystem.Services.Implementations
             // 1. Take user's preferred genre 
             // Can be extended to fetch from user profile
             var preferredGenre = "Pop";
-
             // 2. Get upcoming published events
             var upcomingEvents = await _context.MusicEvents
                                                .Where(e => e.EventDate > DateTime.Now && e.IsPublished)
@@ -106,13 +104,11 @@ namespace MusicEventManagementSystem.Services.Implementations
                 .OrderBy(e => e.EventDate)
                 .Take(3)
                 .ToList();
-
             // If not enough recommendations, fill with other upcoming events
             if (!recommendations.Any())
             {
                 recommendations = upcomingEvents.OrderBy(e => e.EventDate).Take(3).ToList();
             }
-
             return recommendations;
         }
     }

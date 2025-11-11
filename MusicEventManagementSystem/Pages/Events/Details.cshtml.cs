@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using MusicEventManagementSystem.Models;
-using MusicEventManagementSystem.Services.Interfaces; // Sửa namespace
+using MusicEventManagementSystem.Services.Interfaces; // Fix namespace
 using System.Threading.Tasks;
 
 namespace MusicEventManagementSystem.Pages.Events
@@ -24,7 +24,7 @@ namespace MusicEventManagementSystem.Pages.Events
                 return NotFound();
             }
 
-            // Sửa: Dùng GetEventByIdAsync
+            // Edit: Use GetEventByIdAsync
             MusicEvent = await _repository.GetEventByIdAsync(id.Value);
 
             if (MusicEvent == null)

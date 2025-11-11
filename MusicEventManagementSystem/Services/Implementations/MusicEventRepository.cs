@@ -11,7 +11,6 @@ namespace MusicEventManagementSystem.Services.Implementations
     public class MusicEventRepository : IMusicEventRepository
     {
         private readonly MusicDbContext _context;
-
         public MusicEventRepository(MusicDbContext context)
         {
             _context = context;
@@ -22,7 +21,6 @@ namespace MusicEventManagementSystem.Services.Implementations
             await _context.SaveChangesAsync();
             return musicEvent.EventID;
         }
-
         public async Task DeleteEventAsync(int id)
         {
             var musicEvent = await _context.MusicEvents.FindAsync(id);
@@ -37,19 +35,16 @@ namespace MusicEventManagementSystem.Services.Implementations
                 await _context.SaveChangesAsync();
             }
         }
-
         public async Task<IEnumerable<MusicEvent>> GetAllEventsForAdminAsync()
         {
             return await _context.MusicEvents
                 .OrderByDescending(e => e.EventDate)
                 .ToListAsync();
         }
-
         public async Task<MusicEvent?> GetEventByIdAsync(int id)
         {
             return await _context.MusicEvents.FindAsync(id);
         }
-
         public async Task<MusicEvent?> GetEventWithDetailsAsync(int id)
         {
             return await _context.MusicEvents
@@ -57,7 +52,6 @@ namespace MusicEventManagementSystem.Services.Implementations
                 .Include(e => e.RequiredFields)
                 .FirstOrDefaultAsync(e => e.EventID == id);
         }
-
         public async Task<IEnumerable<MusicEvent>> GetPublishedEventsAsync()
         {
             return await _context.MusicEvents
@@ -65,7 +59,6 @@ namespace MusicEventManagementSystem.Services.Implementations
                 .OrderBy(e => e.EventDate)
                 .ToListAsync();
         }
-
         public async Task UpdateEventAsync(MusicEvent musicEvent)
         {
             var dbEvent = await _context.MusicEvents
@@ -94,7 +87,6 @@ namespace MusicEventManagementSystem.Services.Implementations
             {
                 query = query.Where(e => e.Genre == genre);
             }
-
             return await query.OrderBy(e => e.EventDate).ToListAsync();
         }
     }

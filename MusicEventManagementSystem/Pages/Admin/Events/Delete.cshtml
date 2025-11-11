@@ -20,12 +20,12 @@
         <dt class="col-sm-3">Start Date</dt>
         <dd class="col-sm-9">@Html.DisplayFor(model => model.MusicEvent.EventDate)</dd>
 
-        <dt class="col-sm-3">Description</dt>
-        <dd class="col-sm-9" style="white-space: pre-wrap;">@Html.DisplayFor(model => model.MusicEvent.Description)</dd>
+        <dt class="col-sm-3">Description</dt> [cite: 135]
+        <dd class="col-sm-9" style="white-space: pre-wrap;">@Html.DisplayFor(model => model.MusicEvent.Description)</dd> [cite: 135]
     </dl>
 
     <form method="post">
-        @* Sửa: Dùng EventID *@
+        @* Fix: Use EventID *@
         <input type="hidden" asp-for="MusicEvent.EventID" />
         <input type="submit" value="Delete" class="btn btn-danger" />
         <a asp-page="./Index" class="btn btn-secondary">Cancel (Back to List)</a>

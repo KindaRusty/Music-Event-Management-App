@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore; // Cần cho Include
+using Microsoft.EntityFrameworkCore;
 using MusicEventManagementSystem.Data;
 using MusicEventManagementSystem.Models;
 using System.Collections.Generic;
@@ -20,7 +20,7 @@ namespace MusicEventManagementSystem.Pages.Events
             _context = context;
         }
 
-        // Dùng để hiển thị thông tin
+        // Used to display information
         public EventRegistration Registration { get; set; } = default!;
         public List<RegistrationData> DynamicData { get; set; } = new List<RegistrationData>();
 
@@ -28,28 +28,28 @@ namespace MusicEventManagementSystem.Pages.Events
         {
             if (id == null)
             {
-                return NotFound("Không tìm thấy mã đăng ký.");
+                return NotFound("Registration ID not found.");
             }
 
-            // Tải thông tin đăng ký KÈM THEO các thông tin liên quan
+            // Load registration info ALONG WITH related info
             Registration = await _context.EventRegistrations
-                .Include(r => r.MusicEvent)        // Lấy tên sự kiện
-                .Include(r => r.ApplicationUser)  // Lấy email user
-                .Include(r => r.PricingTier)      // Lấy tên loại vé
+                .Include(r => r.MusicEvent)        // Get event name
+                .Include(r => r.ApplicationUser)  // Get user email
+                .Include(r => r.PricingTier)      // Get ticket tier name
                 .FirstOrDefaultAsync(r => r.RegistrationID == id.Value);
 
             if (Registration == null)
             {
-                // Có thể user đang xem đăng ký của người khác
-                return Forbid("Bạn không có quyền xem đăng ký này hoặc đăng ký không tồn tại.");
+                // Maybe the user is trying to view someone else's registration
+                return Forbid("You do not have permission to view this registration or it does not exist.");
             }
 
-            // Tải riêng các dữ liệu động (dynamic fields)
-            // (Bao gồm tên của trường)
+            // Load dynamic fields separately
+            // (Including the field name/label)
             DynamicData = await _context.RegistrationData
-                .Include(d => d.RequiredField) // Lấy tên của trường (Label)
+                .Include(d => d.RequiredField) // Get the field name (Label)
                 .Where(d => d.RegistrationID == id.Value)
-                .OrderBy(d => d.RequiredField.DisplayOrder) // Sắp xếp
+                .OrderBy(d => d.RequiredField.DisplayOrder)
                 .ToListAsync();
 
             return Page();

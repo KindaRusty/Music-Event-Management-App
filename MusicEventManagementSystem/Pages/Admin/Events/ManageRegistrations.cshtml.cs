@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
-using Microsoft.Extensions.Logging; // THÊM DÒNG NÀY
+using Microsoft.Extensions.Logging;
 
 namespace MusicEventManagementSystem.Pages.Admin.Events
 {
@@ -18,16 +18,14 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
     {
         private readonly MusicDbContext _context;
         private readonly IEmailService _emailService;
-        private readonly ILogger<ManageRegistrationsModel> _logger; // THÊM DÒNG NÀY
-
-        // SỬA LẠI CONSTRUCTOR
+        private readonly ILogger<ManageRegistrationsModel> _logger;
         public ManageRegistrationsModel(MusicDbContext context,
                                         IEmailService emailService,
-                                        ILogger<ManageRegistrationsModel> logger) // THÊM LOGGER
+                                        ILogger<ManageRegistrationsModel> logger)
         {
             _context = context;
             _emailService = emailService;
-            _logger = logger; // THÊM DÒNG NÀY
+            _logger = logger;
         }
 
         public MusicEvent MusicEvent { get; set; }
@@ -67,7 +65,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
 
             if (string.IsNullOrEmpty(EmailSubject) || string.IsNullOrEmpty(EmailMessage))
             {
-                TempData["Error"] = "Chủ đề và Nội dung email không được để trống.";
+                TempData["Error"] = "Subject and Email Message cannot be empty.";
                 return RedirectToPage(new { id = id });
             }
 
@@ -75,7 +73,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
 
             if (Registrations == null || !Registrations.Any())
             {
-                TempData["Error"] = "Không có ai đăng ký sự kiện này để gửi email.";
+                TempData["Error"] = "There are no attendees registered for this event to send an email to.";
                 return RedirectToPage(new { id = id });
             }
 
@@ -87,7 +85,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
 
             if (!recipients.Any())
             {
-                TempData["Error"] = "Không tìm thấy email hợp lệ nào của người tham dự.";
+                TempData["Error"] = "No valid attendee emails found.";
                 return RedirectToPage(new { id = id });
             }
 
@@ -98,13 +96,12 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
                     await _emailService.SendEmailAsync(email, EmailSubject, EmailMessage);
                 }
 
-                TempData["Success"] = $"Đã gửi email thành công đến {recipients.Count} người tham dự.";
+                TempData["Success"] = $"Successfully sent email to {recipients.Count} attendees.";
             }
             catch (Exception ex)
             {
-                // SỬA LỖI: Bây giờ _logger đã tồn tại
-                _logger.LogError(ex, "Lỗi khi gửi email hàng loạt cho EventID {EventId}", id);
-                TempData["Error"] = "Đã xảy ra lỗi khi gửi email hàng loạt.";
+                _logger.LogError(ex, "Error sending bulk email for EventID {EventId}", id);
+                TempData["Error"] = "An error occurred while sending the bulk email.";
             }
 
             return RedirectToPage(new { id = id });

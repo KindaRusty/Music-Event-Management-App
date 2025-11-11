@@ -1,7 +1,7 @@
 ﻿@page "{id:int}"
 @model MusicEventManagementSystem.Pages.Events.RegisterModel
 @{
-    ViewData["Title"] = "Đăng ký sự kiện";
+    ViewData["Title"] = "Register for Event";
 }
 
 <div class="container mt-5">
@@ -9,98 +9,99 @@
         <div class="col-lg-8">
             <div class="card shadow-lg">
                 <div class="card-header bg-dark text-white">
-                    <h2 class="mb-0">Đăng ký tham gia</h2>
+                    <h2 class="mb-0">Register to Attend</h2>
                     <h4 class="mb-0 text-muted">@Model.MusicEvent.EventName</h4>
                 </div>
-                
+
                 <form method="post">
                     <input type="hidden" asp-for="Input.EventID" />
 
                     <div class="card-body">
-                        
+
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
-                        <h5 class="mb-3">Bước 1: Chọn loại vé</h5>
+                        <h5 class="mb-3">Step 1: Select Ticket Type</h5>
                         <div class="mb-3">
                             @foreach (var tier in Model.MusicEvent.PricingTiers)
                             {
-                                // Tính toán vé còn lại
-                                var remainingTickets = (tier.AvailableTickets.HasValue) 
-                                    ? (tier.AvailableTickets - tier.SoldTickets) 
-                                    : (int?)null;
-                                
+                                // Calculate remaining tickets
+                                var remainingTickets = (tier.AvailableTickets.HasValue)
+                                ? (tier.AvailableTickets - tier.SoldTickets)
+                                : (int?)null;
+
                                 bool isSoldOut = remainingTickets.HasValue && remainingTickets.Value <= 0;
-                                
-                                <div class="form-check card p-3 mb-2 @(isSoldOut ? "bg-light" : "")">
-                                    @if (isSoldOut)
-                                    {
-                                        <input class="form-check-input" type="radio" 
-                                               asp-for="Input.SelectedPricingTierID" 
-                                               value="@tier.PricingTierID" 
-                                               id="tier-@tier.PricingTierID"
-                                               disabled />
-                                    }
-                                    else
-                                    {
-                                        <input class="form-check-input" type="radio" 
-                                               asp-for="Input.SelectedPricingTierID" 
-                                               value="@tier.PricingTierID" 
-                                               id="tier-@tier.PricingTierID" />
-                                    }
-                                           
-                                    <label class="form-check-label w-100" for="tier-@tier.PricingTierID">
-                                        <div class="d-flex justify-content-between">
-                                            <span class="fw-bold fs-5 @(isSoldOut ? "text-muted" : "")">
-                                                @tier.TierName
-                                                @if (isSoldOut) { <span class="badge bg-danger ms-2">Hết vé</span> }
-                                            </span>
-                                            <span class="fw-bold fs-5 text-primary">@tier.Price.ToString("N0") VNĐ</span>
-                                        </div>
-                                        @if (!string.IsNullOrEmpty(tier.Description))
+
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio"
+                                           asp-for="Input.PricingTierID"
+                                           value="@tier.PricingTierID"
+                                           id="tier-@tier.PricingTierID"
+                                           disabled="@isSoldOut" />
+
+                                    <label class="form-check-label" for="tier-@tier.PricingTierID">
+                                        <strong>@tier.TierName (@tier.Price.ToString("C"))</strong>
+
+                                        @if (isSoldOut)
                                         {
-                                            <div class="text-muted small">@tier.Description</div>
+                                            <span class="badge bg-danger ms-2">SOLD OUT</span>
                                         }
-                                        @if (remainingTickets.HasValue && !isSoldOut)
+                                        else if (remainingTickets.HasValue)
                                         {
-                                            <div class="text-success small fw-bold">Chỉ còn @remainingTickets vé</div>
+                                            <span class="badge bg-warning ms-2">Only @remainingTickets tickets left</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success ms-2">Available</span>
                                         }
                                     </label>
+
+                                    @if (tier.Description != null)
+                                    {
+                                        <small class="form-text text-muted d-block ms-4">@tier.Description</small>
+                                    }
                                 </div>
                             }
-                            <span asp-validation-for="Input.SelectedPricingTierID" class="text-danger"></span>
+                            <span asp-validation-for="Input.PricingTierID" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3 col-md-4">
+                            <label asp-for="Input.Quantity" class="form-label">Quantity</label>
+                            <select asp-for="Input.Quantity" class="form-select">
+                                <option value="0">0 (Do not purchase)</option>
+                                @* Note: This logic assumes a user can select a ticket type but quantity 0. 
+                                   A better UX might be to only show quantity if a tier is selected via JS.
+                                   For now, we'll assume a max of 10 or remaining. *@
+                                @{
+                                    var selectedTierForQty = Model.MusicEvent.PricingTiers.FirstOrDefault(t => t.PricingTierID == Model.Input.PricingTierID);
+                                    var remainingForSelected = (selectedTierForQty?.AvailableTickets.HasValue ?? false)
+                                    ? (selectedTierForQty.AvailableTickets - selectedTierForQty.SoldTickets)
+                                    : 10; // Default max if no specific tier or unlimited
+                                }
+                                @for (int i = 1; i <= Math.Min(remainingForSelected ?? 10, 10); i++)
+                                {
+                                    <option value="@i">@i</option>
+                                }
+                            </select>
+                            <span asp-validation-for="Input.Quantity" class="text-danger small"></span>
                         </div>
 
                         <hr class="my-4" />
 
-                        <h5 class="mb-3">Bước 2: Điền thông tin đăng ký</h5>
-                        
+                        <h5 class="mt-4 mb-3">Step 2: Your Information</h5>
+
                         @foreach (var field in Model.MusicEvent.RequiredFields.OrderBy(f => f.DisplayOrder))
                         {
-                            var fieldName = $"Input.DynamicData[{field.FieldID}]";
-                            
-                            @switch (field.FieldType)
+                            switch (field.FieldType)
                             {
                                 case "Checkbox":
                                     <div class="form-check mb-3">
-                                        <input type="hidden" name="@fieldName" value="false" />
-                                        <input class="form-check-input" type="checkbox" 
-                                               id="field-@field.FieldID" 
-                                               name="@fieldName" 
-                                               value="true" 
-                                               checked="@(Model.Input.DynamicData[field.FieldID] == "true")" />
-                                        <label class="form-check-label" for="field-@field.FieldID">
-                                            @field.FieldName @(field.IsRequired ? "*" : "")
-                                        </label>
-                                        <span asp-validation-for="Input.DynamicData[field.FieldID]" class="text-danger small d-block"></span>
-                                    </div>
-                                    break;
-
-                                case "TextArea":
-                                    <div class="form-floating mb-3">
-                                        <textarea class="form-control" asp-for="Input.DynamicData[field.FieldID]" 
-                                                  id="field-@field.FieldID" 
-                                                  placeholder="@field.FieldName"></textarea>
-                                        <label for="field-@field.FieldID">@field.FieldName @(field.IsRequired ? "*" : "")</label>
+                                        <input type="checkbox"
+                                               class="form-check-input"
+                                               asp-for="Input.DynamicData[field.FieldID]"
+                                               value="true"
+                                               id="field-@field.FieldID" />
+                                        <label class="form-check-label" for="field-@field.FieldID">@field.FieldName @(field.IsRequired ? "*" : "")</label>
+                                        <input type="hidden" asp-for="Input.DynamicData[field.FieldID]" value="false" />
                                         <span asp-validation-for="Input.DynamicData[field.FieldID]" class="text-danger small"></span>
                                     </div>
                                     break;
@@ -108,23 +109,23 @@
                                 case "Email":
                                 case "Tel":
                                 default: // "Text"
-                                    <div class="form-floating mb-3">
-                                        <input type="@field.FieldType.ToLower()" 
-                                               class="form-control" 
-                                               asp-for="Input.DynamicData[field.FieldID]" 
-                                               id="field-@field.FieldID" 
-                                               placeholder="@field.FieldName" />
-                                        <label for="field-@field.FieldID">@field.FieldName @(field.IsRequired ? "*" : "")</label>
-                                        <span asp-validation-for="Input.DynamicData[field.FieldID]" class="text-danger small"></span>
-                                    </div>
+                                         <div class="form-floating mb-3">
+                                             <input type="@field.FieldType.ToLower()"
+                                                    class="form-control"
+                                                    asp-for="Input.DynamicData[field.FieldID]"
+                                                    id="field-@field.FieldID"
+                                                    placeholder="@field.FieldName" />
+                                             <label for="field-@field.FieldID">@field.FieldName @(field.IsRequired ? "*" : "")</label>
+                                             <span asp-validation-for="Input.DynamicData[field.FieldID]" class="text-danger small"></span>
+                                         </div>
                                     break;
                             }
                         }
 
                     </div>
-                    
+
                     <div class="card-footer d-grid">
-                        <button type="submit" class="btn btn-primary btn-lg">Xác nhận Đăng ký</button>
+                        <button type="submit" class="btn btn-primary btn-lg">Confirm Registration</button>
                     </div>
                 </form>
             </div>

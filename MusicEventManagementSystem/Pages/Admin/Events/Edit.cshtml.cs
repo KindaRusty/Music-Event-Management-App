@@ -42,14 +42,14 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
             [Required]
             public int EventID { get; set; }
 
-            [Required(ErrorMessage = "Tên sự kiện là bắt buộc")]
+            [Required(ErrorMessage = "Event name is required")]
             [StringLength(200, MinimumLength = 5)]
             public string EventName { get; set; } = string.Empty;
 
-            [Required(ErrorMessage = "Địa điểm là bắt buộc")]
+            [Required(ErrorMessage = "Location is required")]
             public string Location { get; set; } = string.Empty;
 
-            [Required(ErrorMessage = "Ngày diễn ra là bắt buộc")]
+            [Required(ErrorMessage = "Event date is required")]
             public DateTime EventDate { get; set; }
 
             public string? Genre { get; set; }
@@ -136,7 +136,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
             return Page();
         }
 
-        // [SỬA Ở ĐÂY]
+        // [FIX HERE]
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -154,9 +154,9 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
                 MaxAttendees = Input.MaxAttendees,
                 Description = Input.Description,
                 IsPublished = Input.IsPublished,
-                CreatedByUserID = Input.CreatedByUserID, // Giữ nguyên giá trị cũ
-                CreatedDate = Input.CreatedDate,         // Giữ nguyên giá trị cũ
-                LastModifiedDate = DateTime.UtcNow,      // Cập nhật ngày
+                CreatedByUserID = Input.CreatedByUserID, // Keep the old value
+                CreatedDate = Input.CreatedDate,         // Keep the old value
+                LastModifiedDate = DateTime.UtcNow,      // Update date
 
                 // Map collections
                 PricingTiers = PricingTiers.Select(p => new PricingTier
@@ -166,7 +166,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
                     Price = p.Price,
                     AvailableTickets = p.AvailableTickets,
                     Description = p.Description,
-                    EventID = Input.EventID // <-- [SỬA LỖI Ở ĐÂY]
+                    EventID = Input.EventID // <-- [FIX HERE]
                 }).ToList(),
 
                 RequiredFields = RequiredFields.Select(f => new RequiredField
@@ -176,7 +176,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
                     FieldType = f.FieldType,
                     IsRequired = f.IsRequired,
                     DisplayOrder = f.DisplayOrder,
-                    EventID = Input.EventID // <-- [VÀ SỬA LỖI Ở ĐÂY]
+                    EventID = Input.EventID // <-- [AND FIX HERE]
                 }).ToList()
             };
 
@@ -186,18 +186,18 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                _logger.LogWarning(ex, "Lỗi tương tranh khi cập nhật sự kiện {EventId}", Input.EventID);
-                ModelState.AddModelError(string.Empty, "Dữ liệu đã bị thay đổi bởi người khác. Vui lòng tải lại trang.");
+                _logger.LogWarning(ex, "Concurrency error while updating event {EventId}", Input.EventID);
+                ModelState.AddModelError(string.Empty, "The data was modified by another user. Please reload the page.");
                 return Page();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Lỗi khi cập nhật sự kiện {EventId}", Input.EventID);
-                ModelState.AddModelError(string.Empty, "Đã xảy ra lỗi khi cập nhật sự kiện.");
+                _logger.LogError(ex, "Error updating event {EventId}", Input.EventID);
+                ModelState.AddModelError(string.Empty, "An error occurred while updating the event.");
                 return Page();
             }
 
-            TempData["SuccessMessage"] = "Cập nhật sự kiện thành công!";
+            TempData["SuccessMessage"] = "Event updated successfully!";
             return RedirectToPage("./Index");
         }
     }

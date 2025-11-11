@@ -21,8 +21,6 @@ namespace MusicEventManagementSystem.Models
         public bool EmailReminderEnabled { get; set; } = true;
         public int ReminderHoursBefore { get; set; } = 24;
         public DateTime LastUpdated { get; set; } = DateTime.UtcNow;
-
-        // --- Foreign Key ---
         [Required]
         public string UserID { get; set; } = string.Empty;
         [ForeignKey("UserID")]

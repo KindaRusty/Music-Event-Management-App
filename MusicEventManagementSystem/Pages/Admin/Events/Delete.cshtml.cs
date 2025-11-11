@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Authorization;
 using MusicEventManagementSystem.Models;
-using MusicEventManagementSystem.Services.Interfaces; // Sửa namespace
+using MusicEventManagementSystem.Services.Interfaces; // Fix namespace
 using System.Threading.Tasks;
 
 namespace MusicEventManagementSystem.Pages.Admin.Events
@@ -27,7 +27,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
                 return NotFound();
             }
 
-            // Sửa: Dùng GetEventByIdAsync
+            // Fix: Use GetEventByIdAsync
             MusicEvent = await _repository.GetEventByIdAsync(id.Value);
 
             if (MusicEvent == null)
@@ -44,7 +44,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
                 return NotFound();
             }
 
-            // Sửa: Dùng DeleteEventAsync
+            // Fix: Use DeleteEventAsync
             await _repository.DeleteEventAsync(id.Value);
 
             return RedirectToPage("./Index");

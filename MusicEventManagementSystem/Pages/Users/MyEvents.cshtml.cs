@@ -32,7 +32,7 @@ namespace MusicEventManagementSystem.Pages.User
             }
 
             MyRegistrations = await _context.EventRegistrations
-                .Where(r => r.UserID == userId) // SỬA: Dùng UserID
+                .Where(r => r.UserID == userId)
                 .Include(r => r.MusicEvent)
                 .Include(r => r.PricingTier)
                 .OrderByDescending(r => r.RegistrationDate)

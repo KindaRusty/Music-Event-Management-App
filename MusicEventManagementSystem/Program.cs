@@ -2,54 +2,47 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MusicEventManagementSystem.Data;
 using MusicEventManagementSystem.Models;
-using MusicEventManagementSystem.Services; // Đảm bảo using này
+using MusicEventManagementSystem.Services;
 using MusicEventManagementSystem.Services.Implementations;
 using MusicEventManagementSystem.Services.Interfaces;
-// using MusicEventManagementSystem.Services.Interfaces; // Dòng này có thể không cần nếu bạn không tạo thư mục Interfaces
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Lấy chuỗi kết nối (Connection String)
+// 1. Get connection string from configuration
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-// 2. Đăng ký DbContext với MySQL
+// 2. Register DbContext with MySQL
 builder.Services.AddDbContext<MusicDbContext>(options =>
     options.UseMySql(connectionString,
         ServerVersion.AutoDetect(connectionString),
         mySqlOptions => mySqlOptions.EnableRetryOnFailure()
     ));
 
-// 3. Đăng ký Identity (Sử dụng ApplicationUser)
+// 3. Register Identity services
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<MusicDbContext>()
     .AddDefaultTokenProviders()
     .AddDefaultUI();
 
-// 4. Đăng ký các dịch vụ (Dependency Injection)
+// 4. Register application services
 builder.Services.AddScoped<IMusicEventRepository, MusicEventRepository>();
-builder.Services.AddScoped<IAiService, AiApiService>(); // Giữ lại 1 dòng này
+builder.Services.AddScoped<IAiService, AiApiService>();
 
-// 5. XÓA BỎ CÁC DÒNG LỖI
-// builder.Services.AddScoped<IAiService, AiApiService>(); // XÓA DÒNG BỊ LẶP
-// builder.Services.Configure<AiSettings>(builder.Configuration.GetSection("AiSettings")); // XÓA DÒNG GÂY LỖI "AiSettings"
-
-// 7. Thêm dịch vụ Razor Pages
+// 5. Add razor pages with runtime compilation
 builder.Services.AddRazorPages();
 
-// 8. Định nghĩa Policy "Admin"
+// 6. Define admin policy for authorization
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Admin", policy =>
         policy.RequireRole("Admin"));
 });
 
-// 9. Add Email Service
+// 7. Register email service
 builder.Services.AddTransient<IEmailService, EmailService>();
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
@@ -57,13 +50,15 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
 
 app.UseRouting();
 
-// Đảm bảo 2 dòng này đúng thứ tự
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapRazorPages();
+
 app.Run();

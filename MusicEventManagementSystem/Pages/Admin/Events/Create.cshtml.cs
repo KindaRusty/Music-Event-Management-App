@@ -33,25 +33,25 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
         [BindProperty]
         public InputModel Input { get; set; } = new InputModel();
 
-        // [MỚI] Bind danh sách các loại vé
+        // [NEW] Bind list of ticket tiers
         [BindProperty]
         public List<PricingTierInput> PricingTiers { get; set; } = new List<PricingTierInput>();
 
-        // [MỚI] Bind danh sách các trường bắt buộc
+        // [NEW] Bind list of required fields
         [BindProperty]
         public List<RequiredFieldInput> RequiredFields { get; set; } = new List<RequiredFieldInput>();
 
         #region Input DTOs
         public class InputModel
         {
-            [Required(ErrorMessage = "Tên sự kiện là bắt buộc")]
+            [Required(ErrorMessage = "Event name is required")]
             [StringLength(200, MinimumLength = 5)]
             public string EventName { get; set; } = string.Empty;
 
-            [Required(ErrorMessage = "Địa điểm là bắt buộc")]
+            [Required(ErrorMessage = "Location is required")]
             public string Location { get; set; } = string.Empty;
 
-            [Required(ErrorMessage = "Ngày diễn ra là bắt buộc")]
+            [Required(ErrorMessage = "Event date is required")]
             public DateTime EventDate { get; set; } = DateTime.Now.AddDays(7);
 
             public string? Genre { get; set; }
@@ -60,7 +60,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
             public bool IsPublished { get; set; } = false;
         }
 
-        // [MỚI] DTO cho PricingTier
+        // [NEW] DTO for PricingTier
         public class PricingTierInput
         {
             [Required]
@@ -72,7 +72,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
             public string? Description { get; set; }
         }
 
-        // [MỚI] DTO cho RequiredField
+        // [NEW] DTO for RequiredField
         public class RequiredFieldInput
         {
             [Required]
@@ -92,15 +92,15 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
 
         public void OnGet()
         {
-            // [MỚI] Thêm 1-2 trường/vé mẫu để Admin dễ hình dung
+            // [NEW] Add 1-2 sample fields/tiers for Admin visualization
             if (!PricingTiers.Any())
             {
-                PricingTiers.Add(new PricingTierInput { TierName = "Vé Tiêu Chuẩn", Price = 100000, AvailableTickets = 100 });
+                PricingTiers.Add(new PricingTierInput { TierName = "Standard Ticket", Price = 100000, AvailableTickets = 100 });
             }
 
             if (!RequiredFields.Any())
             {
-                RequiredFields.Add(new RequiredFieldInput { FieldName = "Họ và Tên", FieldType = "Text", IsRequired = true, DisplayOrder = 1 });
+                RequiredFields.Add(new RequiredFieldInput { FieldName = "Full Name", FieldType = "Text", IsRequired = true, DisplayOrder = 1 });
                 RequiredFields.Add(new RequiredFieldInput { FieldName = "Email", FieldType = "Email", IsRequired = true, DisplayOrder = 2 });
             }
         }
@@ -131,7 +131,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
                 CreatedDate = DateTime.UtcNow
             };
 
-            // [MỚI] Map các DTOs từ form sang Model
+            // [NEW] Map DTOs from form to Model
             musicEvent.PricingTiers = PricingTiers.Select(p => new PricingTier
             {
                 TierName = p.TierName,
@@ -151,15 +151,15 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
             try
             {
                 var eventId = await _repository.CreateEventAsync(musicEvent);
-                _logger.LogInformation("Sự kiện {EventId} đã được tạo bởi {UserName}", eventId, user.UserName);
+                _logger.LogInformation("Event {EventId} was created by {UserName}", eventId, user.UserName);
 
-                TempData["SuccessMessage"] = "Tạo sự kiện thành công!"; // Thêm thông báo
+                TempData["SuccessMessage"] = "Event created successfully!"; // Add message
                 return RedirectToPage("./Index");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Lỗi khi tạo sự kiện");
-                ModelState.AddModelError(string.Empty, "Đã xảy ra lỗi khi tạo sự kiện.");
+                _logger.LogError(ex, "Error creating event");
+                ModelState.AddModelError(string.Empty, "An error occurred while creating the event.");
                 return Page();
             }
         }
@@ -168,7 +168,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
         {
             if (string.IsNullOrEmpty(request.Name) || string.IsNullOrEmpty(request.Keywords))
             {
-                return new JsonResult(new { success = false, error = "Tên sự kiện và từ khóa là bắt buộc." });
+                return new JsonResult(new { success = false, error = "Event name and keywords are required." });
             }
 
             try
@@ -178,7 +178,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Lỗi khi tạo mô tả AI");
+                _logger.LogError(ex, "Error generating AI description");
                 return new JsonResult(new { success = false, error = ex.Message });
             }
         }

@@ -14,7 +14,6 @@ namespace MusicEventManagementSystem.Services.Implementations
         private readonly string _apiKey;
         private readonly string _fromEmail;
         private readonly string _fromName;
-
         public EmailService(IConfiguration configuration, ILogger<EmailService> logger)
         {
             _configuration = configuration;
@@ -25,16 +24,14 @@ namespace MusicEventManagementSystem.Services.Implementations
             _fromEmail = _configuration["SendGridSettings:FromEmail"];
             _fromName = _configuration["SendGridSettings:FromName"];
         }
-
         public async Task SendEmailAsync(string toEmail, string subject, string htmlMessage)
         {
             // Check if SendGrid settings are configured
             if (string.IsNullOrEmpty(_apiKey) || string.IsNullOrEmpty(_fromEmail))
             {
-                _logger.LogError("SendGridSettings (ApiKey hoặc FromEmail) chưa được cấu hình trong appsettings.json.");
+                _logger.LogError("SendGridSettings (ApiKey or FromEmail) was not configured in appsettings.json.");
                 return; // Nothing to do if not configured
             }
-
             try
             {
                 var client = new SendGridClient(_apiKey);
@@ -45,25 +42,23 @@ namespace MusicEventManagementSystem.Services.Implementations
                     HtmlContent = htmlMessage
                 };
                 msg.AddTo(new EmailAddress(toEmail));
-
                 // Send the email
                 var response = await client.SendEmailAsync(msg);
-
                 if (!response.IsSuccessStatusCode)
                 {
                     // Write detailed error log
-                    _logger.LogError("Gửi email thất bại. Status code: {StatusCode}, Body: {Body}",
+                    _logger.LogError("Mail sending failed. Status code: {StatusCode}, Body: {Body}",
                         response.StatusCode,
                         await response.Body.ReadAsStringAsync());
                 }
                 else
                 {
-                    _logger.LogInformation("Đã gửi email thành công đến {Email}", toEmail);
+                    _logger.LogInformation("Successfully sent to {Email}", toEmail);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Lỗi nghiêm trọng khi gửi email.");
+                _logger.LogError(ex, "Fatal error while sending mail.");
             }
         }
     }

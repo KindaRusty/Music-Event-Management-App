@@ -22,8 +22,6 @@ namespace MusicEventManagementSystem.Models
         public int EventID { get; set; }
         [ForeignKey("EventID")]
         public virtual MusicEvent? MusicEvent { get; set; }
-
-        // Navigation properties
         public virtual ICollection<RegistrationData> RegistrationData { get; set; } = new List<RegistrationData>();
     }
 }

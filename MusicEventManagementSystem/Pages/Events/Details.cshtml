@@ -28,17 +28,17 @@
                         <strong><i class="fas fa-calendar-alt"></i> Date:</strong>
                         @Model.MusicEvent.EventDate.ToString("dddd, MMMM dd, yyyy")
 
-                        @* Sửa lỗi: Kiểm tra HasValue và dùng .Value *@
-                        @if (Model.MusicEvent.EndDate.HasValue && Model.MusicEvent.EndDate.Value.Date != Model.MusicEvent.EventDate.Date)
+                        @* Fix: Check HasValue and use .Value *@
+                        @if (Model.MusicEvent.EndDate.HasValue && Model.MusicEvent.EndDate.Value.Date == Model.MusicEvent.EventDate.Date)
                         {
-                            <span> - @Model.MusicEvent.EndDate.Value.ToString("dddd, MMMM dd, yyyy")</span>
+                            <span> @Model.MusicEvent.EventDate.ToString("h:mm tt")</span>
                         }
-                    </p>
-                    <p class="card-text">
-                        <strong><i class="fas fa-clock"></i> Time:</strong>
-                        @Model.MusicEvent.EventDate.ToString("h:mm tt")
+                        else
+                        {
+                            <span> @Model.MusicEvent.EventDate.ToString("h:mm tt")</span>
+                        }
 
-                        @* Sửa lỗi: Kiểm tra HasValue và dùng .Value *@
+                        @* Fix: Check HasValue and use .Value *@
                         @if (Model.MusicEvent.EndDate.HasValue)
                         {
                             <span> - @Model.MusicEvent.EndDate.Value.ToString("h:mm tt")</span>
