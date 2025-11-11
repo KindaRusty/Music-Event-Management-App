@@ -42,23 +42,26 @@ builder.Services.AddAuthorization(options =>
 // 7. Register email service
 builder.Services.AddTransient<IEmailService, EmailService>();
 
+// 8. Register template service
+builder.Services.AddScoped<ITemplateService, TemplateService>();
+// 9. Configure SMTP settings
 var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
-
+// 10. Middleware pipeline
 app.UseHttpsRedirection();
-
+// 11. Serve static files
 app.UseStaticFiles();
-
+// 12. Enable routing
 app.UseRouting();
-
+// 13. Enable authentication and authorization
 app.UseAuthentication();
-
+// 14. Enable authorization
 app.UseAuthorization();
-
+// 15. Map razor pages
 app.MapRazorPages();
-
+// 16. Run the application
 app.Run();
