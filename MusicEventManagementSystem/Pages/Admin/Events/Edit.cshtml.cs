@@ -7,12 +7,17 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic; // [SỬA LỖI] Thêm using cho List
+using Microsoft.Extensions.Logging; // [SỬA LỖI] Thêm using cho ILogger
+using System.Linq; // [SỬA LỖI] Thêm using cho .Select, .OrderBy
+using System; // [SỬA LỖI] Thêm using cho DateTime, Exception
 
 namespace MusicEventManagementSystem.Pages.Admin.Events
 {
     [Authorize(Roles = "Admin")]
     public class EditModel : PageModel
     {
+        // [SỬA LỖI 1] Phục hồi các thuộc tính (fields) đã bị mất
         private readonly IMusicEventRepository _repository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<EditModel> _logger;
@@ -30,6 +35,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
         [BindProperty]
         public InputModel Input { get; set; } = new InputModel();
 
+        // [SỬA LỖI 2] Phục hồi các thuộc tính BindProperty cho 2 danh sách
         [BindProperty]
         public List<PricingTierInput> PricingTiers { get; set; } = new List<PricingTierInput>();
 
@@ -57,10 +63,14 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
             public string? Description { get; set; }
             public bool IsPublished { get; set; }
 
+            // [THÊM TỪ LẦN TRƯỚC] Thuộc tính ImageUrl đã thêm
+            public string? ImageUrl { get; set; }
+
             public string CreatedByUserID { get; set; } = string.Empty;
             public DateTime CreatedDate { get; set; }
         }
 
+        // [SỬA LỖI 3] Phục hồi class PricingTierInput
         public class PricingTierInput
         {
             public int PricingTierID { get; set; }
@@ -74,6 +84,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
             public string? Description { get; set; }
         }
 
+        // [SỬA LỖI 4] Phục hồi class RequiredFieldInput
         public class RequiredFieldInput
         {
             public int FieldID { get; set; }
@@ -112,9 +123,13 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
                 Description = musicEvent.Description,
                 IsPublished = musicEvent.IsPublished,
                 CreatedByUserID = musicEvent.CreatedByUserID,
-                CreatedDate = musicEvent.CreatedDate
+                CreatedDate = musicEvent.CreatedDate,
+
+                // [THÊM TỪ LẦN TRƯỚC] Tải ImageUrl từ database
+                ImageUrl = musicEvent.ImageUrl
             };
 
+            // [SỬA LỖI 5] Phục hồi logic tải PricingTiers
             PricingTiers = musicEvent.PricingTiers.Select(p => new PricingTierInput
             {
                 PricingTierID = p.PricingTierID,
@@ -124,6 +139,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
                 Description = p.Description
             }).ToList();
 
+            // [SỬA LỖI 6] Phục hồi logic tải RequiredFields
             RequiredFields = musicEvent.RequiredFields.Select(f => new RequiredFieldInput
             {
                 FieldID = f.FieldID,
@@ -154,11 +170,15 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
                 MaxAttendees = Input.MaxAttendees,
                 Description = Input.Description,
                 IsPublished = Input.IsPublished,
+
+                // [THÊM TỪ LẦN TRƯỚC] Lưu ImageUrl khi post
+                ImageUrl = Input.ImageUrl,
+
                 CreatedByUserID = Input.CreatedByUserID, // Keep the old value
                 CreatedDate = Input.CreatedDate,         // Keep the old value
                 LastModifiedDate = DateTime.UtcNow,      // Update date
 
-                // Map collections
+                // [SỬA LỖI 7] Phục hồi logic map PricingTiers
                 PricingTiers = PricingTiers.Select(p => new PricingTier
                 {
                     PricingTierID = p.PricingTierID,
@@ -169,6 +189,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
                     EventID = Input.EventID // <-- [FIX HERE]
                 }).ToList(),
 
+                // [SỬA LỖI 8] Phục hồi logic map RequiredFields
                 RequiredFields = RequiredFields.Select(f => new RequiredField
                 {
                     FieldID = f.FieldID,
@@ -184,6 +205,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
             {
                 await _repository.UpdateEventAsync(eventToUpdate);
             }
+            // [SỬA LỖI 9] Phục hồi các khối 'catch' đã bị mất
             catch (DbUpdateConcurrencyException ex)
             {
                 _logger.LogWarning(ex, "Concurrency error while updating event {EventId}", Input.EventID);

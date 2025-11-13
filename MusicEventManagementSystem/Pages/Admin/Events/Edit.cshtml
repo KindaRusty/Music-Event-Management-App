@@ -28,67 +28,74 @@
 
                         <div class="row g-4">
 
+                            @* CỘT 1: BASIC INFORMATION *@
                             <div class="col-md-6">
                                 <h4 class="mb-3">Basic Information</h4>
-                                <div class="form-floating mb-3">
 
+                                <div class="form-floating mb-3">
                                     <input asp-for="Input.EventName" class="form-control" id="eventName" placeholder="Event Name" />
                                     <label asp-for="Input.EventName">Event Name</label>
                                     <span asp-validation-for="Input.EventName" class="text-danger small"></span>
-
                                 </div>
 
                                 <div class="form-floating mb-3">
-
                                     <input asp-for="Input.Location" class="form-control" placeholder="Location" />
                                     <label asp-for="Input.Location">Location</label>
                                     <span asp-validation-for="Input.Location" class="text-danger small"></span>
-
                                 </div>
 
                                 <div class="row g-2">
                                     <div class="col-sm-8">
-
                                         <div class="form-floating mb-3">
                                             <input asp-for="Input.EventDate" class="form-control" type="datetime-local" placeholder="Event Date" />
-
                                             <label asp-for="Input.EventDate">Event Date</label>
                                             <span asp-validation-for="Input.EventDate" class="text-danger small"></span>
-
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
-
                                         <div class="form-floating mb-3">
                                             <input asp-for="Input.MaxAttendees" class="form-control" type="number" placeholder="Quantity" />
-
                                             <label asp-for="Input.MaxAttendees">Max Attendees</label>
                                             <span asp-validation-for="Input.MaxAttendees" class="text-danger small"></span>
-
                                         </div>
                                     </div>
                                 </div>
-
 
                                 <div class="form-floating mb-3">
                                     <input asp-for="Input.Genre" class="form-control" placeholder="Genre" />
                                     <label asp-for="Input.Genre">Genre (e.g., EDM, Rock, Pop)</label>
-
                                     <span asp-validation-for="Input.Genre" class="text-danger small"></span>
                                 </div>
+
+                                @* [ĐÃ SỬA] - Bắt đầu khối ImageUrl *@
+                                @if (!string.IsNullOrEmpty(Model.Input.ImageUrl))
+                                {
+                                    <div class="mb-2">
+                                        <label class="form-label small">Image Preview:</label>
+                                        <img src="@Model.Input.ImageUrl" alt="Event Image Preview" style="max-height: 150px; max-width: 100%; object-fit: cover; border-radius: 8px; border: 1px solid #dee2e6;" />
+                                    </div>
+                                }
+                                <div class="form-floating mb-3">
+                                    <input asp-for="Input.ImageUrl" class="form-control" placeholder="Image URL" />
+                                    <label asp-for="Input.ImageUrl">Image URL (Link from internet)</label>
+                                    <span asp-validation-for="Input.ImageUrl" class="text-danger small"></span>
+                                </div>
+                                @* [ĐÃ SỬA] - Kết thúc khối ImageUrl *@
+
                             </div>
+                            @* KẾT THÚC CỘT 1 *@
 
 
+                            @* CỘT 2: DESCRIPTION (ĐÃ SỬA LỖI TRÙNG LẶP) *@
                             <div class="col-md-6">
                                 <h4 class="mb-3">Description</h4>
                                 <div class="form-floating mb-3">
-
                                     <textarea asp-for="Input.Description" class="form-control" placeholder="Event Description" id="eventDescription" style="height: 310px"></textarea>
                                     <label asp-for="Input.Description">Event Description</label>
-
                                     <span asp-validation-for="Input.Description" class="text-danger small"></span>
                                 </div>
                             </div>
+                            @* KẾT THÚC CỘT 2 *@
 
                         </div>
 
@@ -126,7 +133,7 @@
                                     <div class="col-md-4">
                                         <label class="form-label">Short Description</label>
                                         <input asp-for="PricingTiers[i].Description" class="form-control" placeholder="Description
-    (e.g., Near stage)" />
+        (e.g., Near stage)" />
                                     </div>
                                     <div class="col-md-1">
 
@@ -226,7 +233,7 @@
                             // Update the 'name' attribute of all inputs, selects
                             $(this).find('input, select').each(function () {
                                 var newName = $(this).attr('name').replace(/\[\d+\]/, '[' + index + ']');
-        $(this).attr('name', newName);
+                                $(this).attr('name', newName);
 
                                 var newId = $(this).attr('id').replace(/_\d+__/, '_' + index + '__');
                                 $(this).attr('id', newId);
@@ -280,17 +287,16 @@
                                 <input name="PricingTiers[${index}].Description" class="form-control" placeholder="Description" />
 
                    </div>
-                            <div class="col-md-1">
+                           <div class="col-md-1">
                                 <label class="form-label">&nbsp;</label>
                                 <button type="button" class="btn btn-danger w-100 remove-row">Delete</button>
 
               </div>
-                        </div>`;
+                       </div>`;
         container.append(html);
                         reindexDynamicRows('#pricingTiersContainer');
                     });
-
-                    // Add required field
+        // Add required field
                     $("#addRequiredField").on("click", function () {
                         var container = $("#requiredFieldsContainer");
                         var index = container.children('.dynamic-row').length;
