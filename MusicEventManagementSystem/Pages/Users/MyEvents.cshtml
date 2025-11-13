@@ -1,53 +1,145 @@
 ﻿@page
-@model MusicEventManagementSystem.Pages.User.MyEventsModel
+@model MusicEventManagementSystem.Pages.Users.MyEventsModel
 @{
-    ViewData["Title"] = "My Events";
+    ViewData["Title"] = "My Registered Events";
 }
 
-<h1>My Events</h1>
-<p>These are all the events you have registered for.</p>
-<hr />
+<div class="container mt-4">
+    <h1>@ViewData["Title"]</h1>
+    <hr />
 
-@if (!Model.MyRegistrations.Any())
-{
-    <p>You have not registered for any events. <a asp-page="/Index">View event list</a>.</p>
-}
-else
-{
-    <div class="row">
-        @foreach (var reg in Model.MyRegistrations)
-        {
-            <div class="col-md-6">
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <strong>@reg.MusicEvent?.EventName</strong>
-                    </div>
-                    <div class="card-body">
-                        <p><strong>Date:</strong> @reg.MusicEvent?.EventDate.ToString("D")</p>
-                        <p><strong>Location:</strong> @reg.MusicEvent?.Location</p>
-                        <p>
-                            <strong>Your Registration:</strong>
-                            <br />
-                            Ticket Type: @reg.PricingTier?.TierName
-                            <br />
-                            Quantity:
-                            @if (reg.PricingTier != null && reg.PricingTier.Price > 0)
+    @if (Model.Registrations.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Event</th>
+                        <th>Ticket Type</th>
+                        <th>Registration Date</th>
+                        <th>Payment Status</th>
+                        <th>Event Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var reg in Model.Registrations)
+                    {
+                        @* CẬP NHẬT: Chuyển logic tính toán trạng thái lên đầu vòng lặp *@
+                        string eventStatus;
+                        string statusClass;
+                        var now = DateTime.UtcNow;
+
+                        if (reg.MusicEvent.EndDate.HasValue && reg.MusicEvent.EndDate < now)
+                        {
+                            eventStatus = "Ended";
+                            statusClass = "badge bg-secondary";
+                        }
+                        else if (reg.MusicEvent.EventDate > now)
+                        {
+                            eventStatus = "Upcoming";
+                            statusClass = "badge bg-primary";
+                        }
+                        else
+                        {
+                            eventStatus = "Ongoing/Past";
+                            statusClass = "badge bg-info";
+                            if (reg.MusicEvent.EventDate < now.AddDays(-1) && !reg.MusicEvent.EndDate.HasValue)
                             {
-                                @Math.Round(reg.TotalPrice / reg.PricingTier.Price)
+                                eventStatus = "Ended";
+                                statusClass = "badge bg-secondary";
                             }
-                            else
-                            {
-                                @(reg.TotalPrice == 0 ? 1 : "N/A")
-                            }
-                            <br />
-                            Total: @reg.TotalPrice.ToString("C")
-                            <br />
-                            Registration Date: @reg.RegistrationDate.ToString("g")
-                        </p>
-                        <a asp-page="/Events/Details" asp-route-id="@reg.EventID" class="btn btn-info">View Event Details</a>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
+                        }
+
+                        <tr>
+                            <td>
+                                <strong>@reg.MusicEvent.EventName</strong><br>
+                                <small class="text-muted">@reg.MusicEvent.Location</small>
+                            </td>
+                            <td>@reg.PricingTier.TierName</td>
+                            <td>@reg.RegistrationDate.ToString("g")</td>
+                            <td>
+                                @if (reg.PaymentStatus == "Confirmed")
+                                {
+                                    <span class="badge bg-success">Paid</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">Unpaid</span>
+                                }
+                            </td>
+
+                            <td>
+                                <span class="@statusClass">@eventStatus</span>
+
+                                @* Chỉ hiển thị bộ đếm nếu sự kiện sắp diễn ra *@
+                                @if (eventStatus == "Upcoming")
+                                {
+                                    <br>
+                                    <small class="text-muted event-countdown"
+                                           data-event-date="@reg.MusicEvent.EventDate.ToString("o")">
+                                    </small>
+                                }
+                            </td>
+
+                            <td>
+                                <a asp-page="./TicketDetails" asp-route-id="@reg.RegistrationID" class="btn btn-sm btn-outline-primary">
+                                    View Ticket
+                                </a>
+                                <a asp-page="/Events/Details" asp-route-id="@reg.EventID" class="btn btn-sm btn-outline-secondary">
+                                    Event Details
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            You have not registered for any events yet.
+        </div>
+    }
+</div>
+
+@* CẬP NHẬT: Thêm khối JavaScript vào cuối trang *@
+@section Scripts {
+    <script>
+        // Chạy script khi trang đã tải xong
+        document.addEventListener("DOMContentLoaded", function() {
+            // 1. Tìm tất cả các phần tử đếm ngược
+            const countdownElements = document.querySelectorAll(".event-countdown");
+
+            // 2. Lấy ngày hôm nay (chỉ một lần) và set về 0 giờ
+            const now = new Date();
+            now.setHours(0, 0, 0, 0);
+
+            // 3. Lặp qua từng phần tử
+            countdownElements.forEach(function(element) {
+                const eventDateString = element.getAttribute("data-event-date");
+                if (!eventDateString) return; // Bỏ qua nếu không có ngày
+
+                // 4. Phân tích ngày sự kiện và set về 0 giờ
+                const eventDate = new Date(eventDateString);
+                eventDate.setHours(0, 0, 0, 0);
+
+                // 5. Tính toán chênh lệch (tính bằng mili giây)
+                const diffTime = eventDate - now;
+
+                // 6. Chuyển đổi sang ngày và làm tròn
+                const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+                // 7. Hiển thị thông báo
+                if (diffDays > 1) {
+                    element.textContent = `(${diffDays} days remaining)`;
+                } else if (diffDays === 1) {
+                    element.textContent = `(Tomorrow)`;
+                } else if (diffDays === 0) {
+                    element.textContent = `(Today)`;
+                }
+            });
+        });
+    </script>
 }

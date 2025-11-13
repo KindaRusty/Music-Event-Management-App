@@ -1,8 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore; // Thêm
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MusicEventManagementSystem.Models
 {
+    // Thêm Index để tăng tốc độ tìm kiếm bằng ConfirmationCode
+    [Index(nameof(ConfirmationCode), IsUnique = true)]
     public class EventRegistration
     {
         [Key]
@@ -21,6 +24,10 @@ namespace MusicEventManagementSystem.Models
 
         [Column(TypeName = "decimal(18, 2)")]
         public decimal TotalPrice { get; set; }
+
+        // --- Thuộc tính MỚI ---
+        [StringLength(100)]
+        public string? ConfirmationCode { get; set; } // << THÊM DÒNG NÀY
 
         // --- Foreign Keys ---
 

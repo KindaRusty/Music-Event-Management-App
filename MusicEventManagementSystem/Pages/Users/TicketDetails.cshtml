@@ -1,0 +1,96 @@
+﻿@page "{id:int}"
+@model MusicEventManagementSystem.Pages.Users.TicketDetailsModel
+@{
+    ViewData["Title"] = "Ticket Details";
+    var paymentClass = Model.Registration.PaymentStatus == "Confirmed" ? "border-success" : "border-warning";
+    var paymentHeader = Model.Registration.PaymentStatus == "Confirmed" ? "bg-success text-white" : "bg-warning text-dark";
+    var paymentText = Model.Registration.PaymentStatus == "Confirmed" ? "Payment Confirmed" : "Payment Unpaid";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            @if (!string.IsNullOrEmpty(Model.StatusMessage))
+            {
+                var alertClass = Model.StatusMessage.StartsWith("Error") ? "alert-danger" : "alert-success";
+                <div class="alert @alertClass alert-dismissible fade show" role="alert">
+                    @Model.StatusMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <div class="card shadow-lg @paymentClass">
+                <div class="card-header @paymentHeader text-center">
+                    <h2 class="mb-0">@ViewData["Title"]</h2>
+                    <h5 class="mb-0">@paymentText</h5>
+                </div>
+                <div class="card-body p-4 p-md-5">
+
+                    <h4 class="mb-3">Registration Details</h4>
+
+                    <ul class="list-group list-group-flush mb-4">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>Event:</strong>
+                            <span>@Model.Registration.MusicEvent.EventName</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>Attendee Email:</strong>
+                            <span>@Model.Registration.ApplicationUser.Email</span>
+                        </li>
+                        <li class_="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>Ticket Type:</strong>
+                            <span>@Model.Registration.PricingTier.TierName</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>Total Price:</strong>
+                            <span>@Model.Registration.TotalPrice.ToString("N0") VND</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>Registration ID:</strong>
+                            <span>#@Model.Registration.RegistrationID</span>
+                        </li>
+                    </ul>
+
+                    @if (Model.DynamicData.Any())
+                    {
+                        <h5 class="mb-3">Information You Provided</h5>
+                        <ul class="list-group list-group-flush">
+                            @foreach (var data in Model.DynamicData)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <strong>@data.RequiredField.FieldName:</strong>
+                                    @if (data.RequiredField.FieldType == "Checkbox")
+                                    {
+                                        <span>@(data.FieldValue == "true" ? "Agreed" : "No")</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@data.FieldValue</span>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    }
+
+                    <hr class="my-4">
+
+                    <div class="text-center d-grid gap-2 d-md-block">
+
+                        @if (Model.Registration.PaymentStatus != "Confirmed")
+                        {
+                            <form method="post" asp-page-handler="ResendEmail" asp-route-id="@Model.Registration.RegistrationID" class="d-grid mb-2">
+                                <button type="submit" class="btn btn-warning btn-lg">
+                                    <i class="fas fa-envelope"></i> Resend Confirmation Email
+                                </button>
+                            </form>
+                        }
+
+                        <a asp-page="./MyEvents" class="btn btn-outline-primary btn-lg">Back to My Events</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

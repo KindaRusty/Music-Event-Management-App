@@ -1,0 +1,23 @@
+﻿@page
+@model MusicEventManagementSystem.Pages.Events.ConfirmPaymentModel
+@{
+    ViewData["Title"] = "Confirm Payment"; // Dịch
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+
+            <h1>@ViewData["Title"]</h1>
+
+            <div class="alert alert-info shadow-sm" role="alert" style="padding: 20px; font-size: 1.1rem;">
+                @Model.Message
+            </div>
+
+            <div class="mt-4">
+                <a asp-page="/Index" class="btn btn-primary">Back to Home</a> <a asp-page="/Users/MyEvents" class="btn btn-outline-primary">View My Events</a>
+            </div>
+
+        </div>
+    </div>
+</div>

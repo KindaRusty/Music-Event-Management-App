@@ -58,13 +58,29 @@
                 </div>
             </div>
 
-            <div class="d-grid gap-2 my-4">
-                <a asp-page="./Register" asp-route-id="@Model.MusicEvent.EventID" class="btn btn-primary btn-lg">Register Now</a>
+            <div class="col-md-6">
+                <div class="d-grid gap-2 mt-4">
+                    @if (Model.IsAlreadyRegistered)
+                    {
+                        <a asp-page="/Users/TicketDetails" asp-route-id="@Model.UserRegistrationId" class="btn btn-info btn-lg">View Your Ticket</a>
+                    }
+                    else if (Model.IsEventOver)
+                    {
+                        <a class="btn btn-secondary btn-lg disabled" aria-disabled="true">Event Has Ended</a>
+                    }
+                    else if (Model.IsRegistrationClosed)
+                    {
+                        <a class="btn btn-warning btn-lg disabled" aria-disabled="true">Registration Closed</a>
+                    }
+                    else
+                    {
+                        <a asp-page="./Register" asp-route-id="@Model.MusicEvent.EventID" class="btn btn-success btn-lg">Register for this Event</a>
+                    }
+                </div>
+                <a asp-page="/Index" class="btn btn-outline-secondary mt-3">
+                    <i class="fas fa-arrow-left"></i> Back to all events
+                </a>
             </div>
-
-            <a asp-page="/Index" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Back to all events
-            </a>
         </div>
     </div>
 

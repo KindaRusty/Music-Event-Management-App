@@ -164,7 +164,8 @@ namespace MusicEventManagementSystem.Pages.Events
                         TotalPrice = totalPrice,
                         RegistrationDate = DateTime.UtcNow,
                         Status = "Confirmed",
-                        PaymentStatus = "Unpaid"
+                        PaymentStatus = "Unpaid",
+                        ConfirmationCode = Guid.NewGuid().ToString()
                     };
 
                     // Add dynamic data

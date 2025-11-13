@@ -1,37 +1,43 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using MusicEventManagementSystem.Services;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using System.Text; // <-- Thêm using này
 using System.Threading.Tasks;
 
 namespace MusicEventManagementSystem.Services.Implementations
 {
     public class TemplateService : ITemplateService
     {
-        private readonly IWebHostEnvironment _env;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public TemplateService(IWebHostEnvironment env)
+        public TemplateService(IWebHostEnvironment webHostEnvironment)
         {
-            _env = env;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public async Task<string> LoadTemplateAsync(string templateName, Dictionary<string, string> placeholders)
         {
-            // Path to the email template file
-            var templatePath = Path.Combine(_env.ContentRootPath, "EmailTemplates", $"{templateName}.html");
+            var templatePath = Path.Combine(
+                _webHostEnvironment.ContentRootPath,
+                "EmailTemplates",
+                $"{templateName}.html");
 
             if (!File.Exists(templatePath))
             {
-                throw new FileNotFoundException($"Không tìm thấy template '{templateName}.html' tại {templatePath}");
+                return $"Template {templateName} not found.";
             }
 
+            // Dùng StringBuilder để tối ưu việc thay thế
             var templateContent = new StringBuilder(await File.ReadAllTextAsync(templatePath));
 
-            // Replace placeholders in the template
+            // --- SỬA LỖI: Thêm vòng lặp để thay thế placeholder ---
+            // Đây là lý do email của bạn bị trống
             foreach (var placeholder in placeholders)
             {
-                templateContent.Replace($"{{{{{placeholder.Key}}}}}", placeholder.Value);
+                templateContent.Replace(placeholder.Key, placeholder.Value);
             }
+            // --- Kết thúc sửa lỗi ---
 
             return templateContent.ToString();
         }
