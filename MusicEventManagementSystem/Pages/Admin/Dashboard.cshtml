@@ -1,0 +1,290 @@
+﻿@page "/Admin/Dashboard"
+@model MusicEventManagementSystem.Pages.Admin.DashboardModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<h1 class="display-4">@ViewData["Title"]</h1>
+
+<form method="get" class="mb-4">
+    <div class="form-group row">
+        <label asp-for="SelectedEventId" class="col-sm-2 col-form-label font-weight-bold">Lọc theo sự kiện:</label>
+        <div class="col-sm-6">
+            <select asp-for="SelectedEventId" asp-items="Model.EventOptions" class="form-control" onchange="this.form.submit()">
+            </select>
+        </div>
+    </div>
+</form>
+
+<hr />
+
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Tổng Doanh Thu (Lọc)
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalRevenue.ToString("C")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Tổng Lượt Đăng Ký (Lọc)
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalRegistrations</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Tổng Sự Kiện (Lọc)
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalEvents</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Tổng Người Dùng (Hệ Thống)
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalUsers</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-info">Xu hướng đăng ký hàng ngày</h6>
+            </div>
+            <div class="card-body">
+                <div class="chart-container" style="position: relative; height:40vh;">
+                    <canvas id="dailyRegistrationChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.SelectedEventId == 0)
+{
+    <div class="row" id="eventSummaryCharts">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Số lượt đăng ký theo sự kiện</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="position: relative; height:40vh;">
+                        <canvas id="eventRegistrationChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-success">Doanh thu theo sự kiện</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="position: relative; height:40vh;">
+                        <canvas id="eventRevenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+    <script>
+        // Hàm trợ giúp tạo màu ngẫu nhiên
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF'.split('');
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        // Định dạng tiền VNĐ
+        const currencyFormatter = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' });
+
+        // --- (CẬP NHẬT) Khởi tạo Biểu đồ Cột (Chỉ khi chọn "All Events") ---
+        if (@Model.SelectedEventId == 0) {
+            // Biểu đồ 1: Đăng ký theo sự kiện
+            (function () {
+                const rawData = @Html.Raw(Model.EventRegistrationChartData);
+                if (!rawData || rawData.length === 0) return;
+
+                const labels = rawData.map(item => item.eventName);
+                const data = rawData.map(item => item.registrationCount);
+                const backgroundColors = rawData.map(() => getRandomColor());
+
+                new Chart(document.getElementById('eventRegistrationChart').getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Số lượt đăng ký',
+                            data: data,
+                            backgroundColor: backgroundColors,
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            })();
+
+            // Biểu đồ 2: Doanh thu theo sự kiện
+            (function () {
+                const rawData = @Html.Raw(Model.RevenuePerEventChartData);
+                if (!rawData || rawData.length === 0) return;
+
+                const labels = rawData.map(item => item.eventName);
+                const data = rawData.map(item => item.eventRevenue);
+                const backgroundColors = rawData.map(() => getRandomColor());
+
+                new Chart(document.getElementById('eventRevenueChart').getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Doanh thu',
+                            data: data,
+                            backgroundColor: backgroundColors,
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { callback: (value) => currencyFormatter.format(value) }
+                            }
+                        },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            })();
+        }
+
+        // --- (MỚI) Khởi tạo Biểu đồ đường/cột Hỗn hợp: Xu hướng hàng ngày ---
+        (function () {
+            const rawData = @Html.Raw(Model.DailyRegistrationChartData);
+            if (!rawData || rawData.length === 0) {
+                 // Có thể thêm một thông báo "Không có dữ liệu" ở đây
+                return;
+            }
+
+            // Xử lý dữ liệu
+            const labels = rawData.map(item => new Date(item.date).toLocaleDateString('vi-VN'));
+            const regData = rawData.map(item => item.registrationCount);
+            const priceData = rawData.map(item => item.averageTicketPrice);
+
+            const chartData = {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Số lượt đăng ký',
+                        type: 'bar', // Kiểu CỘT
+                        data: regData,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        yAxisID: 'yAxisCount' // Trục Y bên trái
+                    },
+                    {
+                        label: 'Giá vé trung bình',
+                        type: 'line', // Kiểu ĐƯỜNG
+                        data: priceData,
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        fill: false,
+                        yAxisID: 'yAxisPrice' // Trục Y bên phải
+                    }
+                ]
+            };
+
+            const ctx = document.getElementById('dailyRegistrationChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar', // Kiểu cơ sở là 'bar', nhưng dataset sẽ ghi đè
+                data: chartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Ngày đăng ký' }
+                        },
+                        // Trục Y bên trái (cho Số Lượng)
+                        yAxisCount: {
+                            type: 'linear',
+                            position: 'left',
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Số lượt đăng ký'
+                            },
+                            ticks: { precision: 0 } // Chỉ hiển thị số nguyên
+                        },
+                        // Trục Y bên phải (cho Giá Vé)
+                        yAxisPrice: {
+                            type: 'linear',
+                            position: 'right',
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Giá vé trung bình'
+                            },
+                            ticks: {
+                                callback: (value) => currencyFormatter.format(value)
+                            },
+                            // Ẩn lưới của trục Y bên phải để đỡ rối
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: true } // Hiển thị legend (chú thích)
+                    }
+                }
+            });
+        })();
+
+    </script>
+}
