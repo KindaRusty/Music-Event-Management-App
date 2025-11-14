@@ -74,7 +74,6 @@
                     }
 
                     <hr class="my-4">
-
                     <div class="text-center d-grid gap-2 d-md-block">
 
                         @if (Model.Registration.PaymentStatus != "Confirmed")
@@ -86,9 +85,15 @@
                             </form>
                         }
 
+                        @if (Model.Registration.PaymentStatus == "Confirmed")
+                        {
+                            <a asp-page-handler="DownloadPdf" asp-route-id="@Model.Registration.RegistrationID"
+                               class="btn btn-success btn-lg mb-2">
+                                <i class="fas fa-file-pdf"></i> Download Ticket (PDF)
+                            </a>
+                        }
                         <a asp-page="./MyEvents" class="btn btn-outline-primary btn-lg">Back to My Events</a>
                     </div>
-
                 </div>
             </div>
         </div>

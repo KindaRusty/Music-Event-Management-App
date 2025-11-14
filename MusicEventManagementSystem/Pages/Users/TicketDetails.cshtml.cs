@@ -5,11 +5,16 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MusicEventManagementSystem.Data;
 using MusicEventManagementSystem.Models;
-using MusicEventManagementSystem.Services;
+using MusicEventManagementSystem.Services; // Namespace của PdfTicketDocument
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System; // <-- Thêm cái này để dùng Guid
+
+// --- THÊM 2 DÒNG NÀY ĐỂ SỬA LỖI ---
+using QuestPDF.Fluent;
+using QuestPDF.Infrastructure;
+// ----------------------------------
 
 namespace MusicEventManagementSystem.Pages.Users
 {
@@ -66,6 +71,49 @@ namespace MusicEventManagementSystem.Pages.Users
                 .ToListAsync();
 
             return Page();
+        }
+
+        // --- HÀM TẢI PDF ---
+        public async Task<IActionResult> OnGetDownloadPdfAsync(int id)
+        {
+            var userId = _userManager.GetUserId(User);
+            var registration = await _context.EventRegistrations
+                .Include(r => r.MusicEvent)
+                .Include(r => r.ApplicationUser)
+                .Include(r => r.PricingTier)
+                .FirstOrDefaultAsync(r => r.RegistrationID == id);
+
+            // 1. Kiểm tra bảo mật: Vé có tồn tại và thuộc về user này không
+            if (registration == null || registration.UserID != userId)
+            {
+                return Forbid("You do not have permission to download this ticket.");
+            }
+
+            // 2. Kiểm tra theo yêu cầu: Chỉ cho tải khi đã thanh toán
+            if (registration.PaymentStatus != "Confirmed")
+            {
+                StatusMessage = "Error: Ticket must be paid before downloading.";
+                return RedirectToPage(new { id = id });
+            }
+
+            // 3. Lấy dữ liệu động (giống hệt OnGet)
+            var dynamicData = await _context.RegistrationData
+                .Include(d => d.RequiredField)
+                .Where(d => d.RegistrationID == id)
+                .OrderBy(d => d.RequiredField.DisplayOrder)
+                .ToListAsync();
+
+            // 4. Tạo tài liệu PDF
+            // (Giả sử class PdfTicketDocument của bạn nằm trong namespace MusicEventManagementSystem.Services)
+            var document = new PdfTicketDocument(registration, dynamicData);
+
+            // 5. Generate PDF ra mảng byte
+            // Dòng này sẽ hoạt động sau khi thêm 'using QuestPDF.Fluent;'
+            byte[] pdfBytes = document.GeneratePdf();
+
+            // 6. Trả về file cho trình duyệt
+            string fileName = $"Ticket_{registration.MusicEvent.EventName.Replace(" ", "_")}_{id}.pdf";
+            return File(pdfBytes, "application/pdf", fileName);
         }
 
         // --- HÀM ONPOST ĐÃ SỬA LỖI DỮ LIỆU CŨ ---

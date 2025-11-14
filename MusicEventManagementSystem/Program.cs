@@ -5,9 +5,11 @@ using MusicEventManagementSystem.Models;
 using MusicEventManagementSystem.Services;
 using MusicEventManagementSystem.Services.Implementations;
 using MusicEventManagementSystem.Services.Interfaces;
-
+using QuestPDF.Infrastructure;
 var builder = WebApplication.CreateBuilder(args);
+QuestPDF.Settings.License = LicenseType.Community;
 
+builder = WebApplication.CreateBuilder(args);
 // 1. Get connection string from configuration
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
