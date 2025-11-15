@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using MusicEventManagementSystem.Models;
+﻿using MusicEventManagementSystem.Models;
 namespace MusicEventManagementSystem.Services
 {
     public interface IAiService

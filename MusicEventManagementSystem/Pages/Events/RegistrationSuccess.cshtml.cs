@@ -5,10 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using MusicEventManagementSystem.Data;
 using MusicEventManagementSystem.Models;
 using MusicEventManagementSystem.Services;
-using System; // <-- Thêm
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MusicEventManagementSystem.Pages.Events
 {

@@ -2,9 +2,6 @@
 using MusicEventManagementSystem.Data;
 using MusicEventManagementSystem.Models;
 using MusicEventManagementSystem.Services.Interfaces;
-using System.Collections.Generic;
-using System.Linq;
-using System;
 
 namespace MusicEventManagementSystem.Services.Implementations
 {

@@ -1,17 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
 using MusicEventManagementSystem.Models;
 using MusicEventManagementSystem.Services;
 using MusicEventManagementSystem.Services.Interfaces;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MusicEventManagementSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using System;
-
 namespace MusicEventManagementSystem.Pages
 {
     public class IndexModel : PageModel

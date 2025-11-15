@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace MusicEventManagementSystem.Services
+﻿namespace MusicEventManagementSystem.Services
 {
     public interface IEmailService
     {

@@ -3,15 +3,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Authorization;
 using MusicEventManagementSystem.Models;
 using MusicEventManagementSystem.Services.Interfaces;
-using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic; // [SỬA LỖI] Thêm using cho List
-using Microsoft.Extensions.Logging; // [SỬA LỖI] Thêm using cho ILogger
-using System.Linq; // [SỬA LỖI] Thêm using cho .Select, .OrderBy
-using System; // [SỬA LỖI] Thêm using cho DateTime, Exception
-
 namespace MusicEventManagementSystem.Pages.Admin.Events
 {
     [Authorize(Roles = "Admin")]

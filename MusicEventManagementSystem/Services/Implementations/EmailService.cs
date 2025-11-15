@@ -1,10 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
-using MusicEventManagementSystem.Services;
-using SendGrid;
+﻿using SendGrid;
 using SendGrid.Helpers.Mail;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using System;
 namespace MusicEventManagementSystem.Services.Implementations
 {
     public class EmailService : IEmailService

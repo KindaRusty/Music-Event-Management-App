@@ -1,14 +1,8 @@
 ﻿using Azure;
 using Azure.AI.OpenAI;
-using Microsoft.Extensions.Configuration;
-using MusicEventManagementSystem.Services;
-using System;
-using System.Threading.Tasks;
 using MusicEventManagementSystem.Data;
 using MusicEventManagementSystem.Models;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 
 namespace MusicEventManagementSystem.Services.Implementations

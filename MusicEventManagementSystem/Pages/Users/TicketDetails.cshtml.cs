@@ -5,16 +5,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MusicEventManagementSystem.Data;
 using MusicEventManagementSystem.Models;
-using MusicEventManagementSystem.Services; // Namespace của PdfTicketDocument
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-// --- THÊM 2 DÒNG NÀY ĐỂ SỬA LỖI ---
+using MusicEventManagementSystem.Services;
 using QuestPDF.Fluent;
-using QuestPDF.Infrastructure;
-// ----------------------------------
 
 namespace MusicEventManagementSystem.Pages.Users
 {

@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace MusicEventManagementSystem.Services
+﻿namespace MusicEventManagementSystem.Services
 {
     public interface ITemplateService
     {

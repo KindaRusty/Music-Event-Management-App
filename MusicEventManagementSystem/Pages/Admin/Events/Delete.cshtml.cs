@@ -2,8 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Authorization;
 using MusicEventManagementSystem.Models;
-using MusicEventManagementSystem.Services.Interfaces; // Fix namespace
-using System.Threading.Tasks;
+using MusicEventManagementSystem.Services.Interfaces;
 
 namespace MusicEventManagementSystem.Pages.Admin.Events
 {

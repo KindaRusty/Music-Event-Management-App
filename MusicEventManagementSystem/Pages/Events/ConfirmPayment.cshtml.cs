@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MusicEventManagementSystem.Data;
-using System.Threading.Tasks;
 
 namespace MusicEventManagementSystem.Pages.Events
 {

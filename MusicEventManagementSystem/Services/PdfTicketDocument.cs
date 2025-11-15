@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using MusicEventManagementSystem.Models;
-using QuestPDF.Drawing;
+﻿using MusicEventManagementSystem.Models;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;

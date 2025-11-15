@@ -1,7 +1,4 @@
 ﻿using MusicEventManagementSystem.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 namespace MusicEventManagementSystem.Services.Interfaces
 {
     public interface IMusicEventRepository

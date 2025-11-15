@@ -2,12 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using MusicEventManagementSystem.Models;
-// Sửa: Đảm bảo using đúng cho repository của bạn
-using MusicEventManagementSystem.Services;
 using MusicEventManagementSystem.Services.Interfaces;
-using System; // Thêm
-using System.Security.Claims; // Thêm
-using System.Threading.Tasks;
 
 namespace MusicEventManagementSystem.Pages.Events
 {

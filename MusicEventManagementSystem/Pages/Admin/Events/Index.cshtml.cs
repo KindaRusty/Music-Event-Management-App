@@ -2,9 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using MusicEventManagementSystem.Models;
 using MusicEventManagementSystem.Services.Interfaces;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace MusicEventManagementSystem.Pages.Admin.Events
 {

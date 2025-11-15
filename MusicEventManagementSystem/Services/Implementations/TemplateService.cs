@@ -1,9 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using MusicEventManagementSystem.Services;
-using System.Collections.Generic;
-using System.IO;
-using System.Text; // <-- Thêm using này
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace MusicEventManagementSystem.Services.Implementations
 {

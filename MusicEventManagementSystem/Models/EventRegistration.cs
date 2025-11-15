@@ -25,11 +25,8 @@ namespace MusicEventManagementSystem.Models
         [Column(TypeName = "decimal(18, 2)")]
         public decimal TotalPrice { get; set; }
 
-        // --- Thuộc tính MỚI ---
         [StringLength(100)]
-        public string? ConfirmationCode { get; set; } // << THÊM DÒNG NÀY
-
-        // --- Foreign Keys ---
+        public string? ConfirmationCode { get; set; }
 
         [Required]
         public int EventID { get; set; }
