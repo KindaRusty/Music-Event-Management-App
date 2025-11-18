@@ -23,16 +23,14 @@ namespace MusicEventManagementSystem.Services.Implementations
                 return $"Template {templateName} not found.";
             }
 
-            // Dùng StringBuilder để tối ưu việc thay thế
+            // Use StringBuilder for efficient string manipulation
             var templateContent = new StringBuilder(await File.ReadAllTextAsync(templatePath));
 
-            // --- SỬA LỖI: Thêm vòng lặp để thay thế placeholder ---
-            // Đây là lý do email của bạn bị trống
+            // This is why your email was empty
             foreach (var placeholder in placeholders)
             {
                 templateContent.Replace(placeholder.Key, placeholder.Value);
             }
-            // --- Kết thúc sửa lỗi ---
 
             return templateContent.ToString();
         }

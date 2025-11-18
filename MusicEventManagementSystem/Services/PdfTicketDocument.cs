@@ -24,7 +24,7 @@ namespace MusicEventManagementSystem.Services
             container
                 .Page(page =>
                 {
-                    page.Size(PageSizes.A6); // Kích thước vé
+                    page.Size(PageSizes.A6);
                     page.Margin(30, Unit.Point);
                     page.PageColor(Colors.White);
                     page.DefaultTextStyle(x => x.FontSize(10).FontFamily(Fonts.Arial));
@@ -54,12 +54,11 @@ namespace MusicEventManagementSystem.Services
     {
         text.DefaultTextStyle(x => x.Bold().FontSize(14));
 
-        // SỬA Ở ĐÂY:
-        text.AlignRight(); // Căn lề cho toàn bộ khối text này
-        text.Line($"REG ID\n#{_registration.RegistrationID}"); // Thêm nội dung
+        text.AlignRight();
+        text.Line($"REG ID\n#{_registration.RegistrationID}");
     });
             });
-           
+
         }
 
         void ComposeContent(IContainer container)
@@ -72,10 +71,6 @@ namespace MusicEventManagementSystem.Services
                 {
                     col.Item().PaddingTop(15, Unit.Point).Element(ComposeDynamicData);
                 }
-
-                // Bạn có thể thêm mã QR ở đây nếu muốn
-                // col.Item().AlignCenter().Width(150, Unit.Point).Height(150, Unit.Point)
-                //     .Barcode(BarcodeType.QRCode, _registration.ConfirmationCode);
             });
         }
 

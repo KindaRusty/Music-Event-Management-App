@@ -21,7 +21,7 @@ namespace MusicEventManagementSystem.Pages.Events
         {
             if (string.IsNullOrEmpty(code))
             {
-                Message = "Invalid or missing confirmation link."; // Dịch
+                Message = "Invalid or missing confirmation link.";
                 return Page();
             }
 
@@ -31,13 +31,12 @@ namespace MusicEventManagementSystem.Pages.Events
 
             if (registration == null)
             {
-                Message = "Your registration could not be found. The link may be expired or incorrect."; // Dịch
+                Message = "Your registration could not be found. The link may be expired or incorrect.";
                 return Page();
             }
 
             if (registration.PaymentStatus == "Confirmed")
             {
-                // SỬA LỖI: .EventName và Dịch
                 Message = $"The registration for '{registration.MusicEvent.EventName}' has already been confirmed. Thank you!";
                 return Page();
             }
@@ -45,8 +44,6 @@ namespace MusicEventManagementSystem.Pages.Events
             registration.PaymentStatus = "Confirmed";
 
             await _context.SaveChangesAsync();
-
-            // SỬA LỖI: .EventName và Dịch
             Message = $"Payment for '{registration.MusicEvent.EventName}' confirmed successfully! Thank you for registering.";
             return Page();
         }

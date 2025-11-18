@@ -13,7 +13,8 @@
             }
             else
             {
-                <img src="https://via.placeholder.com/600x400.png?text=Event+Image" class="img-fluid rounded shadow" alt="No Image Available">
+                <img src="https://via.placeholder.com/600x400.png?text=Event+Image" class="img-fluid rounded shadow"
+                    alt="No Image Available">
             }
         </div>
 
@@ -28,8 +29,8 @@
                         <strong><i class="fas fa-calendar-alt"></i> Date:</strong>
                         @Model.MusicEvent.EventDate.ToString("dddd, MMMM dd, yyyy")
 
-                        @* Fix: Check HasValue and use .Value *@
-                        @if (Model.MusicEvent.EndDate.HasValue && Model.MusicEvent.EndDate.Value.Date == Model.MusicEvent.EventDate.Date)
+                        @if (Model.MusicEvent.EndDate.HasValue && Model.MusicEvent.EndDate.Value.Date ==
+                                                Model.MusicEvent.EventDate.Date)
                         {
                             <span> @Model.MusicEvent.EventDate.ToString("h:mm tt")</span>
                         }
@@ -38,7 +39,6 @@
                             <span> @Model.MusicEvent.EventDate.ToString("h:mm tt")</span>
                         }
 
-                        @* Fix: Check HasValue and use .Value *@
                         @if (Model.MusicEvent.EndDate.HasValue)
                         {
                             <span> - @Model.MusicEvent.EndDate.Value.ToString("h:mm tt")</span>
@@ -62,7 +62,8 @@
                 <div class="d-grid gap-2 mt-4">
                     @if (Model.IsAlreadyRegistered)
                     {
-                        <a asp-page="/Users/TicketDetails" asp-route-id="@Model.UserRegistrationId" class="btn btn-info btn-lg">View Your Ticket</a>
+                        <a asp-page="/Users/TicketDetails" asp-route-id="@Model.UserRegistrationId"
+                            class="btn btn-info btn-lg">View Your Ticket</a>
                     }
                     else if (Model.IsEventOver)
                     {
@@ -74,7 +75,8 @@
                     }
                     else
                     {
-                        <a asp-page="./Register" asp-route-id="@Model.MusicEvent.EventID" class="btn btn-success btn-lg">Register for this Event</a>
+                        <a asp-page="./Register" asp-route-id="@Model.MusicEvent.EventID"
+                            class="btn btn-success btn-lg">Register for this Event</a>
                     }
                 </div>
                 <a asp-page="/Index" class="btn btn-outline-secondary mt-3">

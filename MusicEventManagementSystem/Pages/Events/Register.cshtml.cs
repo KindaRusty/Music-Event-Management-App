@@ -46,7 +46,6 @@ namespace MusicEventManagementSystem.Pages.Events
             [Required]
             [Range(1, 10, ErrorMessage = "Ticket quantity must be between 1 and 10.")]
             public int Quantity { get; set; } = 1;
-
             // Used to receive dynamic fields
             public Dictionary<int, string> DynamicData { get; set; } = new Dictionary<int, string>();
         }
@@ -88,9 +87,8 @@ namespace MusicEventManagementSystem.Pages.Events
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return Challenge(); // Requires login
+                return Challenge();
             }
-
             // Check dynamic fields
             foreach (var field in musicEvent.RequiredFields.Where(f => f.IsRequired))
             {
