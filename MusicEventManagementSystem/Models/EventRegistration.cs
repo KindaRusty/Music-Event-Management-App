@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MusicEventManagementSystem.Models
 {
-    // Thêm Index để tăng tốc độ tìm kiếm bằng ConfirmationCode
     [Index(nameof(ConfirmationCode), IsUnique = true)]
     public class EventRegistration
     {
@@ -42,7 +41,6 @@ namespace MusicEventManagementSystem.Models
         public int PricingTierID { get; set; }
         [ForeignKey("PricingTierID")]
         public virtual PricingTier? PricingTier { get; set; }
-
         public virtual ICollection<RegistrationData> RegistrationData { get; set; } = new List<RegistrationData>();
     }
 }

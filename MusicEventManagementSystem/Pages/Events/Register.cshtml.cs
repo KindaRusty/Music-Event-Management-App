@@ -46,7 +46,6 @@ namespace MusicEventManagementSystem.Pages.Events
             [Required]
             [Range(1, 10, ErrorMessage = "Ticket quantity must be between 1 and 10.")]
             public int Quantity { get; set; } = 1;
-            // Used to receive dynamic fields
             public Dictionary<int, string> DynamicData { get; set; } = new Dictionary<int, string>();
         }
 
@@ -70,7 +69,6 @@ namespace MusicEventManagementSystem.Pages.Events
                     Input.DynamicData.Add(field.FieldID, defaultValue);
                 }
             }
-            // Assign EventID to InputModel for posting
             Input.EventID = MusicEvent.EventID;
 
             return Page();
@@ -89,7 +87,6 @@ namespace MusicEventManagementSystem.Pages.Events
             {
                 return Challenge();
             }
-            // Check dynamic fields
             foreach (var field in musicEvent.RequiredFields.Where(f => f.IsRequired))
             {
                 if (!Input.DynamicData.ContainsKey(field.FieldID) || string.IsNullOrWhiteSpace(Input.DynamicData[field.FieldID]))
@@ -112,7 +109,6 @@ namespace MusicEventManagementSystem.Pages.Events
 
             if (!ModelState.IsValid)
             {
-                // If there are errors, reload the page with event info
                 MusicEvent = musicEvent;
                 return Page();
             }
@@ -121,7 +117,6 @@ namespace MusicEventManagementSystem.Pages.Events
 
             var result = await strategy.ExecuteAsync(async () =>
             {
-                // Begin Transaction
                 await using var transaction = await _context.Database.BeginTransactionAsync();
 
                 try
@@ -135,8 +130,6 @@ namespace MusicEventManagementSystem.Pages.Events
                         ModelState.AddModelError(string.Empty, "Invalid ticket type.");
                         return (IActionResult)Page();
                     }
-
-                    // Check remaining ticket quantity (Concurrency Check)
                     if (selectedTier.AvailableTickets.HasValue)
                     {
                         int remaining = selectedTier.AvailableTickets.Value - selectedTier.SoldTickets;
@@ -147,13 +140,10 @@ namespace MusicEventManagementSystem.Pages.Events
                         }
                     }
 
-                    // Update sold tickets count
                     selectedTier.SoldTickets += Input.Quantity;
 
-                    // Calculate total price
                     decimal totalPrice = selectedTier.Price * Input.Quantity;
 
-                    // Create EventRegistration object
                     var registration = new EventRegistration
                     {
                         EventID = Input.EventID,
@@ -165,8 +155,6 @@ namespace MusicEventManagementSystem.Pages.Events
                         PaymentStatus = "Unpaid",
                         ConfirmationCode = Guid.NewGuid().ToString()
                     };
-
-                    // Add dynamic data
                     if (Input.DynamicData != null)
                     {
                         foreach (var data in Input.DynamicData.Where(d => !string.IsNullOrWhiteSpace(d.Value)))
@@ -178,19 +166,14 @@ namespace MusicEventManagementSystem.Pages.Events
                             });
                         }
                     }
-
-                    // Save Registration (and RegistrationData, and update PricingTier)
                     _context.EventRegistrations.Add(registration);
 
-                    // Save all changes to DB
                     await _context.SaveChangesAsync();
 
-                    // Commit Transaction
                     await transaction.CommitAsync();
 
                     _logger.LogInformation("User {UserId} successfully registered for event {EventId}", user.Id, musicEvent.EventID);
 
-                    // Redirect to success page
                     return (IActionResult)RedirectToPage("/Events/RegistrationSuccess", new { id = registration.RegistrationID });
                 }
                 catch (Exception ex)
@@ -201,8 +184,6 @@ namespace MusicEventManagementSystem.Pages.Events
                     return (IActionResult)Page();
                 }
             });
-
-            // Return the result from within the strategy
             return result!;
         }
     }

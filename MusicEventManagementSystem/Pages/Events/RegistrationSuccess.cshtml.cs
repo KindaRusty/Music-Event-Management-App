@@ -82,7 +82,7 @@ namespace MusicEventManagementSystem.Pages.Events
 
                 // 4. Send email
                 await _emailService.SendEmailAsync(
-                    recipientEmail, // <-- Send to found email
+                    recipientEmail,
                     $"Payment Confirmation for: {Registration.MusicEvent.EventName}",
                     emailBody);
             }

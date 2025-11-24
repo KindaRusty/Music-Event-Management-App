@@ -32,15 +32,10 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
 
         [BindProperty]
         public InputModel Input { get; set; } = new InputModel();
-
-        // [NEW] Bind list of ticket tiers
         [BindProperty]
         public List<PricingTierInput> PricingTiers { get; set; } = new List<PricingTierInput>();
-
-        // [NEW] Bind list of required fields
         [BindProperty]
         public List<RequiredFieldInput> RequiredFields { get; set; } = new List<RequiredFieldInput>();
-
         #region Input DTOs
         public class InputModel
         {
@@ -60,7 +55,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
             public bool IsPublished { get; set; } = false;
         }
 
-        // [NEW] DTO for PricingTier
+        // DTO for PricingTier
         public class PricingTierInput
         {
             [Required]
@@ -72,7 +67,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
             public string? Description { get; set; }
         }
 
-        // [NEW] DTO for RequiredField
+        // DTO for RequiredField
         public class RequiredFieldInput
         {
             [Required]
@@ -92,7 +87,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
 
         public void OnGet()
         {
-            // [NEW] Add 1-2 sample fields/tiers for Admin visualization
+            //Add 1-2 sample fields/tiers for Admin visualization
             if (!PricingTiers.Any())
             {
                 PricingTiers.Add(new PricingTierInput { TierName = "Standard Ticket", Price = 100000, AvailableTickets = 100 });
@@ -131,7 +126,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
                 CreatedDate = DateTime.UtcNow
             };
 
-            // [NEW] Map DTOs from form to Model
+            //Map DTOs from form to Model
             musicEvent.PricingTiers = PricingTiers.Select(p => new PricingTier
             {
                 TierName = p.TierName,

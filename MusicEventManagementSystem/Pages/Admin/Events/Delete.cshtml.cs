@@ -10,23 +10,18 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
     public class DeleteModel : PageModel
     {
         private readonly IMusicEventRepository _repository;
-
         public DeleteModel(IMusicEventRepository repository)
         {
             _repository = repository;
         }
-
         [BindProperty]
         public MusicEvent MusicEvent { get; set; } = default!;
-
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-
-            // Fix: Use GetEventByIdAsync
             MusicEvent = await _repository.GetEventByIdAsync(id.Value);
 
             if (MusicEvent == null)
@@ -42,8 +37,6 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
             {
                 return NotFound();
             }
-
-            // Fix: Use DeleteEventAsync
             await _repository.DeleteEventAsync(id.Value);
 
             return RedirectToPage("./Index");

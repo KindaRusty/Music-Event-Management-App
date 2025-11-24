@@ -3,8 +3,6 @@ using Azure.AI.OpenAI;
 using MusicEventManagementSystem.Data;
 using MusicEventManagementSystem.Models;
 using Microsoft.EntityFrameworkCore;
-
-
 namespace MusicEventManagementSystem.Services.Implementations
 {
     public class AiApiService : IAiService
@@ -17,7 +15,8 @@ namespace MusicEventManagementSystem.Services.Implementations
             var apiKey = configuration["OpenAISettings:ApiKey"];
             if (string.IsNullOrEmpty(apiKey))
             {
-                throw new InvalidOperationException("OpenAI API key (OpenAISettings:ApiKey) không được cấu hình trong appsettings.json");
+                // -> "OpenAI API key (OpenAISettings:ApiKey) is not configured in appsettings.json"
+                throw new InvalidOperationException("OpenAI API key (OpenAISettings:ApiKey) is not configured in appsettings.json");
             }
             _client = new OpenAIClient(apiKey);
             _model = configuration["OpenAISettings:Model"] ?? "gpt-3.5-turbo";
@@ -85,7 +84,6 @@ namespace MusicEventManagementSystem.Services.Implementations
         public async Task<List<MusicEvent>> GetEventRecommendationsAsync(string userId)
         {
             // 1. Take user's preferred genre 
-            // Can be extended to fetch from user profile
             var preferredGenre = "Pop";
             // 2. Get upcoming published events
             var upcomingEvents = await _context.MusicEvents
@@ -98,7 +96,6 @@ namespace MusicEventManagementSystem.Services.Implementations
                 .OrderBy(e => e.EventDate)
                 .Take(3)
                 .ToList();
-            // If not enough recommendations, fill with other upcoming events
             if (!recommendations.Any())
             {
                 recommendations = upcomingEvents.OrderBy(e => e.EventDate).Take(3).ToList();

@@ -81,3 +81,54 @@ body {
   white-space: nowrap;
   line-height: 60px;
 }
+
+
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+body {
+    margin-bottom: 60px;
+    font-family: 'Segoe UI', SegoeUI, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.bg-dotnet {
+    background-color: #512BD4 !important;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+}
+
+    .navbar-dark .navbar-nav .nav-link:hover {
+        color: #fff;
+        text-decoration: underline;
+        text-underline-offset: 4px;
+    }
+
+.navbar-brand {
+    color: #fff !important;
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+/* Footer styling */
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px;
+    background-color: #f3f2f1;
+}

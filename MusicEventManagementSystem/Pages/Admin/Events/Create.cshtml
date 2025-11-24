@@ -270,34 +270,19 @@ spinner.hide();
                     }
                 });
             });
-// [NEW] Re-index names and IDs of dynamic rows
             function reindexDynamicRows(containerSelector) {
                 $(containerSelector).children('.dynamic-row').each(function (index) {
-                    // Update the 'name' attribute of all inputs, selects
                     $(this).find('input, select').each(function () {
-    
-                    // Regex to find and replace index (e.g., PricingTiers[0].TierName -> PricingTiers[index].TierName)
                         var newName = $(this).attr('name').replace(/\[\d+\]/, '[' + index + ']');
                         $(this).attr('name', newName);
-
-           
-             // Update 'id' and 'for' of validation (if present)
                         var newId = $(this).attr('id').replace(/_\d+__/, '_' + index + '__');
                         $(this).attr('id', newId);
-
-                     
-   // Update validation message (data-valmsg-for)
                         $(this).siblings('span.text-danger').attr('data-valmsg-for', newName);
-// Update label 'for' (if present)
                         $(this).siblings('label').attr('for', newId);
 });
-
-                    // Update order (for required fields)
                     $(this).find('.display-order').val(index);
 });
             }
-
-            // [NEW] Remove a row
             $('body').on('click', '.remove-row', function () {
                 var container = $(this).closest('.dynamic-row').parent();
                 $(this).closest('.dynamic-row').remove();
@@ -309,7 +294,6 @@ spinner.hide();
                     reindexDynamicRows('#requiredFieldsContainer');
                 }
             });
-// [NEW] Add ticket type
             $("#addPricingTier").on("click", function () {
                 var container = $("#pricingTiersContainer");
                 var index = container.children('.dynamic-row').length;
@@ -345,8 +329,6 @@ rounded">
 container.append(html);
                 reindexDynamicRows('#pricingTiersContainer');
             });
-
-            // [NEW] Add required field
             $("#addRequiredField").on("click", function () {
                 var container = $("#requiredFieldsContainer");
                 var index = container.children('.dynamic-row').length;

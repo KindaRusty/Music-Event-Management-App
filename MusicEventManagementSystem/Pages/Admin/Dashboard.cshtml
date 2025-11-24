@@ -8,7 +8,7 @@
 
 <form method="get" class="mb-4">
     <div class="form-group row">
-        <label asp-for="SelectedEventId" class="col-sm-2 col-form-label font-weight-bold">Lọc theo sự kiện:</label>
+        <label asp-for="SelectedEventId" class="col-sm-2 col-form-label font-weight-bold">Filter by Event:</label>
         <div class="col-sm-6">
             <select asp-for="SelectedEventId" asp-items="Model.EventOptions" class="form-control" onchange="this.form.submit()">
             </select>
@@ -25,7 +25,7 @@
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                            Tổng Doanh Thu (Lọc)
+                            Total Revenue (Filtered)
                         </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalRevenue.ToString("C")</div>
                     </div>
@@ -39,7 +39,7 @@
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                            Tổng Lượt Đăng Ký (Lọc)
+                            Total Registrations (Filtered)
                         </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalRegistrations</div>
                     </div>
@@ -53,7 +53,7 @@
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                            Tổng Sự Kiện (Lọc)
+                            Total Events (Filtered)
                         </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalEvents</div>
                     </div>
@@ -67,7 +67,7 @@
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                            Tổng Người Dùng (Hệ Thống)
+                            Total Users (System)
                         </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalUsers</div>
                     </div>
@@ -81,7 +81,7 @@
     <div class="col-lg-12">
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-info">Xu hướng đăng ký hàng ngày</h6>
+                <h6 class="m-0 font-weight-bold text-info">Daily Trending Registration</h6>
             </div>
             <div class="card-body">
                 <div class="chart-container" style="position: relative; height:40vh;">
@@ -98,7 +98,7 @@
         <div class="col-lg-6">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Số lượt đăng ký theo sự kiện</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Registrations per Event</h6>
                 </div>
                 <div class="card-body">
                     <div class="chart-container" style="position: relative; height:40vh;">
@@ -111,7 +111,7 @@
         <div class="col-lg-6">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-success">Doanh thu theo sự kiện</h6>
+                    <h6 class="m-0 font-weight-bold text-success">Revenue per Event</h6>
                 </div>
                 <div class="card-body">
                     <div class="chart-container" style="position: relative; height:40vh;">
@@ -128,7 +128,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
     <script>
-        // Hàm trợ giúp tạo màu ngẫu nhiên
         function getRandomColor() {
             var letters = '0123456789ABCDEF'.split('');
             var color = '#';
@@ -137,13 +136,9 @@
             }
             return color;
         }
-
-        // Định dạng tiền VNĐ
         const currencyFormatter = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' });
 
-        // --- (CẬP NHẬT) Khởi tạo Biểu đồ Cột (Chỉ khi chọn "All Events") ---
         if (@Model.SelectedEventId == 0) {
-            // Biểu đồ 1: Đăng ký theo sự kiện
             (function () {
                 const rawData = @Html.Raw(Model.EventRegistrationChartData);
                 if (!rawData || rawData.length === 0) return;
@@ -151,13 +146,12 @@
                 const labels = rawData.map(item => item.eventName);
                 const data = rawData.map(item => item.registrationCount);
                 const backgroundColors = rawData.map(() => getRandomColor());
-
                 new Chart(document.getElementById('eventRegistrationChart').getContext('2d'), {
                     type: 'bar',
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Số lượt đăng ký',
+                            label: 'Registration Count',
                             data: data,
                             backgroundColor: backgroundColors,
                         }]
@@ -170,7 +164,6 @@
                 });
             })();
 
-            // Biểu đồ 2: Doanh thu theo sự kiện
             (function () {
                 const rawData = @Html.Raw(Model.RevenuePerEventChartData);
                 if (!rawData || rawData.length === 0) return;
@@ -184,7 +177,7 @@
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Doanh thu',
+                            label: 'Revenue',
                             data: data,
                             backgroundColor: backgroundColors,
                         }]
@@ -202,16 +195,12 @@
                 });
             })();
         }
-
-        // --- (MỚI) Khởi tạo Biểu đồ đường/cột Hỗn hợp: Xu hướng hàng ngày ---
         (function () {
             const rawData = @Html.Raw(Model.DailyRegistrationChartData);
             if (!rawData || rawData.length === 0) {
-                 // Có thể thêm một thông báo "Không có dữ liệu" ở đây
                 return;
             }
 
-            // Xử lý dữ liệu
             const labels = rawData.map(item => new Date(item.date).toLocaleDateString('vi-VN'));
             const regData = rawData.map(item => item.registrationCount);
             const priceData = rawData.map(item => item.averageTicketPrice);
@@ -220,67 +209,63 @@
                 labels: labels,
                 datasets: [
                     {
-                        label: 'Số lượt đăng ký',
-                        type: 'bar', // Kiểu CỘT
+                        label: 'Registration Count',
+                        type: 'bar',
                         data: regData,
                         backgroundColor: 'rgba(54, 162, 235, 0.6)',
                         borderColor: 'rgba(54, 162, 235, 1)',
-                        yAxisID: 'yAxisCount' // Trục Y bên trái
+                        yAxisID: 'yAxisCount'
                     },
                     {
-                        label: 'Giá vé trung bình',
-                        type: 'line', // Kiểu ĐƯỜNG
+                        label: 'Average Ticket Price',
+                        type: 'line',
                         data: priceData,
                         backgroundColor: 'rgba(255, 99, 132, 0.6)',
                         borderColor: 'rgba(255, 99, 132, 1)',
                         fill: false,
-                        yAxisID: 'yAxisPrice' // Trục Y bên phải
+                        yAxisID: 'yAxisPrice'
                     }
                 ]
             };
-
             const ctx = document.getElementById('dailyRegistrationChart').getContext('2d');
             new Chart(ctx, {
-                type: 'bar', // Kiểu cơ sở là 'bar', nhưng dataset sẽ ghi đè
+                type: 'bar',
                 data: chartData,
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
                         x: {
-                            title: { display: true, text: 'Ngày đăng ký' }
+                            title: { display: true, text: 'Registration Date' }
                         },
-                        // Trục Y bên trái (cho Số Lượng)
                         yAxisCount: {
                             type: 'linear',
                             position: 'left',
                             beginAtZero: true,
                             title: {
                                 display: true,
-                                text: 'Số lượt đăng ký'
+                                text: 'Registration Count'
                             },
-                            ticks: { precision: 0 } // Chỉ hiển thị số nguyên
+                            ticks: { precision: 0 }
                         },
-                        // Trục Y bên phải (cho Giá Vé)
                         yAxisPrice: {
                             type: 'linear',
                             position: 'right',
                             beginAtZero: true,
                             title: {
                                 display: true,
-                                text: 'Giá vé trung bình'
+                                text: 'Avg. Ticket Price'
                             },
                             ticks: {
                                 callback: (value) => currencyFormatter.format(value)
                             },
-                            // Ẩn lưới của trục Y bên phải để đỡ rối
                             grid: {
                                 drawOnChartArea: false
                             }
                         }
                     },
                     plugins: {
-                        legend: { display: true } // Hiển thị legend (chú thích)
+                        legend: { display: true }
                     }
                 }
             });

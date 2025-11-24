@@ -25,7 +25,7 @@ namespace MusicEventManagementSystem.Services.Implementations
             if (string.IsNullOrEmpty(_apiKey) || string.IsNullOrEmpty(_fromEmail))
             {
                 _logger.LogError("SendGridSettings (ApiKey or FromEmail) was not configured in appsettings.json.");
-                return; // Nothing to do if not configured
+                return;
             }
             try
             {

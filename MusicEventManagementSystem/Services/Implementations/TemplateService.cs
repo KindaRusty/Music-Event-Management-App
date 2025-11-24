@@ -23,10 +23,8 @@ namespace MusicEventManagementSystem.Services.Implementations
                 return $"Template {templateName} not found.";
             }
 
-            // Use StringBuilder for efficient string manipulation
             var templateContent = new StringBuilder(await File.ReadAllTextAsync(templatePath));
 
-            // This is why your email was empty
             foreach (var placeholder in placeholders)
             {
                 templateContent.Replace(placeholder.Key, placeholder.Value);

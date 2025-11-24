@@ -12,8 +12,6 @@ namespace MusicEventManagementSystem.Models
         [Column(TypeName = "TEXT")]
         public string FieldValue { get; set; } = string.Empty;
 
-        // --- Foreign Keys ---
-
         [Required]
         public int RegistrationID { get; set; }
         [ForeignKey("RegistrationID")]

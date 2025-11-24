@@ -7,7 +7,6 @@ namespace MusicEventManagementSystem.Models
     {
         [Key]
         public int FieldID { get; set; }
-
         [Required]
         [StringLength(100)]
         public string FieldName { get; set; } = string.Empty;

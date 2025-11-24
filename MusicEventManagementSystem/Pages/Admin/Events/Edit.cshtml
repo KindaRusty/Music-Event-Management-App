@@ -27,8 +27,6 @@
                         <input type="hidden" asp-for="Input.CreatedDate" />
 
                         <div class="row g-4">
-
-                            @* CỘT 1: BASIC INFORMATION *@
                             <div class="col-md-6">
                                 <h4 class="mb-3">Basic Information</h4>
 
@@ -66,8 +64,6 @@
                                     <label asp-for="Input.Genre">Genre (e.g., EDM, Rock, Pop)</label>
                                     <span asp-validation-for="Input.Genre" class="text-danger small"></span>
                                 </div>
-
-                                @* [ĐÃ SỬA] - Bắt đầu khối ImageUrl *@
                                 @if (!string.IsNullOrEmpty(Model.Input.ImageUrl))
                                 {
                                     <div class="mb-2">
@@ -80,13 +76,8 @@
                                     <label asp-for="Input.ImageUrl">Image URL (Link from internet)</label>
                                     <span asp-validation-for="Input.ImageUrl" class="text-danger small"></span>
                                 </div>
-                                @* [ĐÃ SỬA] - Kết thúc khối ImageUrl *@
 
                             </div>
-                            @* KẾT THÚC CỘT 1 *@
-
-
-                            @* CỘT 2: DESCRIPTION (ĐÃ SỬA LỖI TRÙNG LẶP) *@
                             <div class="col-md-6">
                                 <h4 class="mb-3">Description</h4>
                                 <div class="form-floating mb-3">
@@ -95,7 +86,6 @@
                                     <span asp-validation-for="Input.Description" class="text-danger small"></span>
                                 </div>
                             </div>
-                            @* KẾT THÚC CỘT 2 *@
 
                         </div>
 
@@ -225,12 +215,9 @@
 
     <script>
                 $(document).ready(function () {
-
-                    // Re-index names and IDs of dynamic rows
                     function reindexDynamicRows(containerSelector) {
 
             $(containerSelector).children('.dynamic-row').each(function (index) {
-                            // Update the 'name' attribute of all inputs, selects
                             $(this).find('input, select').each(function () {
                                 var newName = $(this).attr('name').replace(/\[\d+\]/, '[' + index + ']');
                                 $(this).attr('name', newName);
@@ -245,8 +232,6 @@
                             $(this).find('.display-order').val(index);
                         });
         }
-
-                    // Remove a row
                     $('body').on('click', '.remove-row', function () {
                         var container = $(this).closest('.dynamic-row').parent();
                         $(this).closest('.dynamic-row').remove();
@@ -258,7 +243,6 @@
                             reindexDynamicRows('#requiredFieldsContainer');
                         }
                     });
-        // Add ticket type
                     $("#addPricingTier").on("click", function () {
                         var container = $("#pricingTiersContainer");
                         var index = container.children('.dynamic-row').length;
@@ -296,7 +280,6 @@
         container.append(html);
                         reindexDynamicRows('#pricingTiersContainer');
                     });
-        // Add required field
                     $("#addRequiredField").on("click", function () {
                         var container = $("#requiredFieldsContainer");
                         var index = container.children('.dynamic-row').length;

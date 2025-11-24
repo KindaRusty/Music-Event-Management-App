@@ -26,7 +26,7 @@ namespace MusicEventManagementSystem.Services.Implementations
                 var hasRegistrations = await _context.EventRegistrations.AnyAsync(r => r.EventID == id);
                 if (hasRegistrations)
                 {
-                    throw new InvalidOperationException("Không thể xóa sự kiện đã có đăng ký.");
+                    throw new InvalidOperationException("Cannot delete an event that has existing registrations.");
                 }
                 _context.MusicEvents.Remove(musicEvent);
                 await _context.SaveChangesAsync();

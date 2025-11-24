@@ -25,7 +25,6 @@
                 <tbody>
                     @foreach (var reg in Model.Registrations)
                     {
-                        @* CẬP NHẬT: Chuyển logic tính toán trạng thái lên đầu vòng lặp *@
                         string eventStatus;
                         string statusClass;
                         var now = DateTime.UtcNow;
@@ -72,7 +71,6 @@
                             <td>
                                 <span class="@statusClass">@eventStatus</span>
 
-                                @* Chỉ hiển thị bộ đếm nếu sự kiện sắp diễn ra *@
                                 @if (eventStatus == "Upcoming")
                                 {
                                     <br>
@@ -104,34 +102,27 @@
     }
 </div>
 
-@* CẬP NHẬT: Thêm khối JavaScript vào cuối trang *@
 @section Scripts {
     <script>
-        // Chạy script khi trang đã tải xong
+        // Run script when page is loaded
         document.addEventListener("DOMContentLoaded", function() {
-            // 1. Tìm tất cả các phần tử đếm ngược
+            // 1. Find all countdown elements
             const countdownElements = document.querySelectorAll(".event-countdown");
-
-            // 2. Lấy ngày hôm nay (chỉ một lần) và set về 0 giờ
+            // 2. Get today's date (once) and set to 00:00
             const now = new Date();
             now.setHours(0, 0, 0, 0);
-
-            // 3. Lặp qua từng phần tử
+            // 3. Loop through each element
             countdownElements.forEach(function(element) {
                 const eventDateString = element.getAttribute("data-event-date");
-                if (!eventDateString) return; // Bỏ qua nếu không có ngày
-
-                // 4. Phân tích ngày sự kiện và set về 0 giờ
+                if (!eventDateString) return;
+                // 4. Parse event date and set to 00:00
                 const eventDate = new Date(eventDateString);
                 eventDate.setHours(0, 0, 0, 0);
-
-                // 5. Tính toán chênh lệch (tính bằng mili giây)
+                // 5. Calculate difference (in milliseconds)
                 const diffTime = eventDate - now;
-
-                // 6. Chuyển đổi sang ngày và làm tròn
+                // 6. Convert to days and round
                 const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-
-                // 7. Hiển thị thông báo
+                // 7. Show notification
                 if (diffDays > 1) {
                     element.textContent = `(${diffDays} days remaining)`;
                 } else if (diffDays === 1) {

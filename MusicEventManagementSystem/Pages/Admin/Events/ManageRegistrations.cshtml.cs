@@ -44,8 +44,6 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
 
         [BindProperty]
         public string AiPrompt { get; set; }
-
-
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null) return NotFound();
@@ -70,14 +68,6 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
 
             try
             {
-                // Use IAiService to generate content
-                // (You might need to create a new method in IAiService for this,
-                // or reuse GenerateEventDescriptionAsync if it fits)
-
-                // Assuming we use a new method (needs adding to IAiService)
-                // var generatedContent = await _aiService.GenerateEmailContentAsync(request.EventName, request.Prompt);
-
-                // Temporarily, we reuse GetChatReplyAsync
                 string fullPrompt = $"Write an email notification for the event '{request.EventName}' with the content: {request.Prompt}. Only return the email content, without any greeting.";
                 var generatedContent = await _aiService.GetChatReplyAsync(fullPrompt);
 
@@ -141,7 +131,7 @@ namespace MusicEventManagementSystem.Pages.Admin.Events
                         // 2. Load template
                         finalHtmlMessage = await _templateService.LoadTemplateAsync("EventAnnouncement", placeholders);
                     }
-                    else // (SelectedTemplate == "Custom")
+                    else
                     {
                         // 3. Send raw content if Custom is selected
                         finalHtmlMessage = EmailMessage;
