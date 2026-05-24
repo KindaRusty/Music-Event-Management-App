@@ -416,3 +416,7 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Project-specific ignores
+appsettings.json
+appsettings.Development.json
